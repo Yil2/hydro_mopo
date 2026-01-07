@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hydro_inflow"
+version = "2026.1.0"
+
+dependencies = [
+            "toml == 0.10.2", 
+            "cdsapi==0.7.5",
+            "geoglows==1.7.0",
+            "geopandas==1.0.1",
+            "matplotlib==3.7.1",
+            "numpy==1.26.4",
+            "pandas==2.2.3",
+            "python-dotenv==1.1.0",
+            "Requests==2.32.3",
+            "scikit_learn==1.6.1",
+            "scipy==1.15.2",
+            "Shapely==2.1.0",
+            "xarray==2025.3.1",
+            "xgboost==3.0.0",
+            "netCDF4==1.7.2",
+            "entsoe-py==0.6.18",
+	          "openpyxl==3.1.2",
+            "zarr==2.18.3"
+]
+
+requires-python = "==3.12.4"
+
+authors = [
+  {name = "Yi Liu", email = "yil2@kth.se"},
+]
+
+description = "This is a tool for hydro climate related data modelling globally"
+readme = "README.md"
+license = "MIT"
+keywords = ["hydro", "electricity"]
+
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python :: 3.11"
+]
+
+[project.urls]
+
+[project.scripts]
+hydro-inflow = "hydro_inflow.__main__:main"
+
+[project.gui-scripts]
+hydro-inflow = "hydro_inflow.__main__:main"

@@ -1,0 +1,644 @@
+[AT]
+COUNTRY = "Austria"
+iso_code = "AT"
+Entsoe = "AT"
+eSett = ""
+PECD2 = [ "AT01", "AT02", "AT03",]
+entose_reservoir_rate = ""
+entose_pumped = "20181001"
+entose_ror = "20181001"
+entose_generation = "20181001"
+start_date = ""
+end_date = "20211231"
+hdam_type_support = false
+hror_type_support = true
+
+[BE]
+COUNTRY = "Belgium"
+iso_code = "BE"
+Entsoe = "BE"
+eSett = ""
+PECD2 = [ "BE01", "BE02", "BE03",]
+entose_reservoir_rate = ""
+entose_pumped = "20150105"
+entose_ror = "20150105"
+entose_generation = ""
+start_date = ""
+end_date = ""
+hdam_type_support = false
+hror_type_support = true
+
+[BA]
+COUNTRY = "Bosnia"
+iso_code = "BA"
+Entsoe = "BA"
+eSett = ""
+PECD2 = [ "BA00",]
+entose_reservoir_rate = ""
+entose_pumped = ""
+entose_ror = "20210531"
+entose_generation = "20170306"
+start_date = ""
+end_date = ""
+hdam_type_support = false
+hror_type_support = false
+
+[BG]
+COUNTRY = "Bulgaria"
+iso_code = "BG"
+Entsoe = "BG"
+eSett = ""
+PECD2 = [ "BG01", "BG02",]
+entose_reservoir_rate = "20150105"
+entose_pumped = "20150105"
+entose_ror = "20170102"
+entose_generation = "20150105"
+start_date = ""
+end_date = ""
+hdam_type_support = true
+hror_type_support = true
+
+[HR]
+COUNTRY = "Croatia"
+iso_code = "HR"
+Entsoe = "HR"
+eSett = ""
+PECD2 = [ "HR01",]
+entose_reservoir_rate = "20150105"
+entose_pumped = "20190107"
+entose_ror = "20190107"
+entose_generation = "20190107"
+start_date = ""
+end_date = ""
+hdam_type_support = true
+hror_type_support = true
+
+[CZ]
+COUNTRY = "Czech"
+iso_code = "CZ"
+Entsoe = "CZ"
+eSett = ""
+PECD2 = [ "CZ01", "CZ02",]
+entose_reservoir_rate = ""
+entose_pumped = "20150105"
+entose_ror = "20150105"
+entose_generation = "20150105"
+start_date = ""
+end_date = ""
+hdam_type_support = false
+hror_type_support = true
+
+[DK]
+COUNTRY = "Denmark"
+iso_code = "DK"
+Entsoe = "DK_1"
+eSett = ""
+PECD2 = [ "DKW1",]
+entose_reservoir_rate = ""
+entose_pumped = ""
+entose_ror = "20150105"
+entose_generation = ""
+start_date = ""
+end_date = ""
+hdam_type_support = false
+hror_type_support = false
+
+[EE]
+COUNTRY = "Estonia"
+iso_code = "EE"
+Entsoe = "EE"
+eSett = ""
+PECD2 = [ "EE00",]
+entose_reservoir_rate = ""
+entose_pumped = ""
+entose_ror = "20150105"
+entose_generation = ""
+start_date = ""
+end_date = ""
+hdam_type_support = false
+hror_type_support = false
+
+[FI]
+COUNTRY = "Finland"
+iso_code = "FI"
+Entsoe = "FI"
+eSett = "FI"
+PECD2 = [ "FI01", "FI02",]
+entose_reservoir_rate = "20150105"
+entose_pumped = ""
+entose_ror = "20150105"
+entose_generation = ""
+start_date = ""
+end_date = ""
+hdam_type_support = false
+hror_type_support = true
+
+[FR]
+COUNTRY = "France"
+iso_code = "FR"
+Entsoe = "FR"
+eSett = ""
+PECD2 = [ "FR01", "FR02", "FR03", "FR04", "FR05", "FR06", "FR07", "FR08", "FR09", "FR10", "FR11", "FR12", "FR13", "FR14", "FR15",]
+entose_reservoir_rate = "20150105"
+entose_pumped = "20150105"
+entose_ror = "20150105"
+entose_generation = "20150105"
+start_date = ""
+end_date = ""
+hdam_type_support = true
+hror_type_support = true
+
+[DE-LU]
+COUNTRY = "Germany-Luxembourg"
+iso_code = "DE"
+Entsoe = "DE_LU"
+eSett = ""
+PECD2 = [ "DE01", "DE02", "DE03", "DE04", "DE05", "DE06", "DE07", "LU00",]
+entose_reservoir_rate = ""
+entose_pumped = "20181001"
+entose_ror = "20181001"
+entose_generation = "20181001"
+start_date = ""
+end_date = ""
+hdam_type_support = false
+hror_type_support = true
+
+[GR]
+COUNTRY = "Greece"
+iso_code = "GR"
+Entsoe = "GR"
+eSett = ""
+PECD2 = [ "GR01", "GR02", "GR03",]
+entose_reservoir_rate = "20171002"
+entose_pumped = "20150105"
+entose_ror = ""
+entose_generation = "20150105"
+start_date = ""
+end_date = ""
+hdam_type_support = true
+hror_type_support = false
+
+[HU]
+COUNTRY = "Hungary"
+iso_code = "HU"
+Entsoe = "HU"
+eSett = ""
+PECD2 = [ "HU01", "HU02", "HU03",]
+entose_reservoir_rate = ""
+entose_pumped = ""
+entose_ror = "20150105"
+entose_generation = "20150105"
+start_date = ""
+end_date = ""
+hdam_type_support = false
+hror_type_support = false
+
+[IE]
+COUNTRY = "Ireland"
+iso_code = "IE"
+Entsoe = "IE_SEM"
+eSett = ""
+PECD2 = [ "IE00",]
+entose_reservoir_rate = ""
+entose_pumped = "20150105"
+entose_ror = "20150105"
+entose_generation = ""
+start_date = ""
+end_date = ""
+hdam_type_support = false
+hror_type_support = true
+
+[ITCN]
+COUNTRY = "Italy"
+iso_code = "IT"
+Entsoe = "IT_CNOR"
+eSett = ""
+PECD2 = [ "ITCN",]
+entose_reservoir_rate = "20150112"
+entose_pumped = "20150105"
+entose_ror = "20150105"
+entose_generation = "20150105"
+start_date = ""
+end_date = ""
+hdam_type_support = true
+hror_type_support = true
+
+[ITCS]
+COUNTRY = ""
+iso_code = "IT"
+Entsoe = "IT_CSUD"
+eSett = ""
+PECD2 = [ "ITCS",]
+entose_reservoir_rate = "20150112"
+entose_pumped = "20150105"
+entose_ror = "20150105"
+entose_generation = "20150105"
+start_date = ""
+end_date = ""
+hdam_type_support = true
+hror_type_support = true
+
+[ITN1]
+COUNTRY = ""
+iso_code = "IT"
+Entsoe = "IT_NORD"
+eSett = ""
+PECD2 = [ "ITN1",]
+entose_reservoir_rate = "20150112"
+entose_pumped = "20150105"
+entose_ror = "20150105"
+entose_generation = "20150105"
+start_date = ""
+end_date = ""
+hdam_type_support = true
+hror_type_support = true
+
+[ITSA]
+COUNTRY = ""
+iso_code = "IT"
+Entsoe = "IT_SARD"
+eSett = ""
+PECD2 = [ "ITSA",]
+entose_reservoir_rate = "20150112"
+entose_pumped = "20150105"
+entose_ror = "20150105"
+entose_generation = "20150105"
+start_date = ""
+end_date = ""
+hdam_type_support = true
+hror_type_support = true
+
+[ITSI]
+COUNTRY = ""
+iso_code = "IT"
+Entsoe = "IT_SICI"
+eSett = ""
+PECD2 = [ "ITSI",]
+entose_reservoir_rate = "20150112"
+entose_pumped = "20150105"
+entose_ror = "20150105"
+entose_generation = "20150105"
+start_date = ""
+end_date = ""
+hdam_type_support = true
+hror_type_support = true
+
+[ITSU]
+COUNTRY = ""
+iso_code = "IT"
+Entsoe = "IT_SUD"
+eSett = ""
+PECD2 = [ "ITS1", "ITCA",]
+entose_reservoir_rate = "20150112"
+entose_pumped = ""
+entose_ror = "20210105"
+entose_generation = "20150105"
+start_date = ""
+end_date = ""
+hdam_type_support = true
+hror_type_support = false
+
+[LV]
+COUNTRY = "Latvia"
+iso_code = "LV"
+Entsoe = "LV"
+eSett = ""
+PECD2 = [ "LV00",]
+entose_reservoir_rate = "20140106"
+entose_pumped = ""
+entose_ror = "20150330"
+entose_generation = ""
+start_date = ""
+end_date = ""
+hdam_type_support = false
+hror_type_support = true
+
+[LT]
+COUNTRY = "Lithuania"
+iso_code = "LT"
+Entsoe = "LT"
+eSett = ""
+PECD2 = [ "LT00",]
+entose_reservoir_rate = "20140106"
+entose_pumped = "20150105"
+entose_ror = "20150105"
+entose_generation = ""
+start_date = ""
+end_date = ""
+hdam_type_support = false
+hror_type_support = true
+
+[ME]
+COUNTRY = "Montenegro"
+iso_code = "ME"
+Entsoe = "ME"
+eSett = ""
+PECD2 = [ "ME00",]
+entose_reservoir_rate = "20150112"
+entose_pumped = ""
+entose_ror = ""
+entose_generation = "20150105"
+start_date = ""
+end_date = ""
+hdam_type_support = false
+hror_type_support = false
+
+[NL]
+COUNTRY = "Netherlands"
+iso_code = "NL"
+Entsoe = "NL"
+eSett = ""
+PECD2 = [ "NL01", "NL02", "NL03", "NL04",]
+entose_reservoir_rate = ""
+entose_pumped = ""
+entose_ror = ""
+entose_generation = ""
+start_date = ""
+end_date = ""
+hdam_type_support = false
+hror_type_support = false
+
+[MK]
+COUNTRY = "North Macedonia"
+iso_code = "MK"
+Entsoe = "MK"
+eSett = ""
+PECD2 = [ "MK00",]
+entose_reservoir_rate = ""
+entose_pumped = ""
+entose_ror = ""
+entose_generation = "20160516"
+start_date = ""
+end_date = ""
+hdam_type_support = false
+hror_type_support = false
+
+[NO1]
+COUNTRY = "Norway"
+iso_code = "NO"
+Entsoe = "NO_1"
+eSett = ""
+PECD2 = [ "NOS1",]
+entose_reservoir_rate = "20150105"
+entose_pumped = ""
+entose_ror = "20150105"
+entose_generation = "20150105"
+start_date = ""
+end_date = ""
+hdam_type_support = true
+hror_type_support = true
+
+[NO2]
+COUNTRY = ""
+iso_code = "NO"
+Entsoe = "NO_2"
+eSett = ""
+PECD2 = [ "NOS2",]
+entose_reservoir_rate = "20150105"
+entose_pumped = ""
+entose_ror = "20150105"
+entose_generation = "20150105"
+start_date = ""
+end_date = ""
+hdam_type_support = true
+hror_type_support = true
+
+[NO3]
+COUNTRY = ""
+iso_code = "NO"
+Entsoe = "NO_3"
+eSett = ""
+PECD2 = [ "NOM1",]
+entose_reservoir_rate = "20150105"
+entose_pumped = ""
+entose_ror = "20150105"
+entose_generation = "20150105"
+start_date = ""
+end_date = ""
+hdam_type_support = true
+hror_type_support = true
+
+[NO4]
+COUNTRY = ""
+iso_code = "NO"
+Entsoe = "NO_4"
+eSett = ""
+PECD2 = [ "NON1",]
+entose_reservoir_rate = "20150105"
+entose_pumped = ""
+entose_ror = "20150105"
+entose_generation = "20150105"
+start_date = ""
+end_date = ""
+hdam_type_support = true
+hror_type_support = true
+
+[NO5]
+COUNTRY = ""
+iso_code = "NO"
+Entsoe = "NO_5"
+eSett = ""
+PECD2 = [ "NOS3",]
+entose_reservoir_rate = "20150105"
+entose_pumped = ""
+entose_ror = "20150105"
+entose_generation = "20150105"
+start_date = ""
+end_date = ""
+hdam_type_support = true
+hror_type_support = true
+
+[PT]
+COUNTRY = "Portugal"
+iso_code = "PT"
+Entsoe = "PT"
+eSett = ""
+PECD2 = [ "PT01","PT02",]
+entose_reservoir_rate = "20140929"
+entose_pumped = "20150105"
+entose_ror = "20150105"
+entose_generation = "20150105"
+start_date = ""
+end_date = ""
+hdam_type_support = true
+hror_type_support = true
+
+[RO]
+COUNTRY = "Romania"
+iso_code = "RO"
+Entsoe = "RO"
+eSett = ""
+PECD2 = [ "RO01", "RO02", "RO03",]
+entose_reservoir_rate = "20150105"
+entose_pumped = ""
+entose_ror = "20150112"
+entose_generation = "20150112"
+start_date = ""
+end_date = ""
+hdam_type_support = true
+hror_type_support = true
+
+[RS]
+COUNTRY = "Serbia"
+iso_code = "RS"
+Entsoe = "RS"
+eSett = ""
+PECD2 = [ "RS01",]
+entose_reservoir_rate = "20161219"
+entose_pumped = "20170102"
+entose_ror = "20170102"
+entose_generation = "20170102"
+start_date = ""
+end_date = ""
+hdam_type_support = false
+hror_type_support = true
+
+[SI]
+COUNTRY = "Slovenia"
+iso_code = "SI"
+Entsoe = "SI"
+eSett = ""
+PECD2 = [ "SI00",]
+entose_reservoir_rate = "20150105"
+entose_pumped = "20150105"
+entose_ror = "20150105"
+entose_generation = ""
+start_date = ""
+end_date = ""
+hdam_type_support = false
+hror_type_support = true
+
+[ES]
+COUNTRY = "Spain"
+iso_code = "ES"
+Entsoe = "ES"
+eSett = ""
+PECD2 = [ "ES01", "ES02", "ES03", "ES04", "ES05", "ES06", "ES07", "ES08", "ES09", "ES10", "ES11", "ES12",]
+entose_reservoir_rate = "20141227"
+entose_pumped = "20141227"
+entose_ror = "20141227"
+entose_generation = "20141227"
+start_date = ""
+end_date = ""
+hdam_type_support = true
+hror_type_support = true
+
+[SE1]
+COUNTRY = "Sweden"
+iso_code = "SE"
+Entsoe = "SE_1"
+eSett = "SE1"
+PECD2 = [ "SE01",]
+entose_reservoir_rate = "20141006"
+entose_pumped = ""
+entose_ror = ""
+entose_generation = ""
+start_date = ""
+end_date = ""
+hdam_type_support = true
+hror_type_support = false
+
+[SE2]
+COUNTRY = ""
+iso_code = "SE"
+Entsoe = "SE_2"
+eSett = "SE2"
+PECD2 = [ "SE02",]
+entose_reservoir_rate = "20141006"
+entose_pumped = ""
+entose_ror = ""
+entose_generation = ""
+start_date = ""
+end_date = ""
+hdam_type_support = true
+hror_type_support = false
+
+[SE3]
+COUNTRY = ""
+iso_code = "SE"
+Entsoe = "SE_3"
+eSett = "SE3"
+PECD2 = [ "SE03",]
+entose_reservoir_rate = "20141006"
+entose_pumped = ""
+entose_ror = ""
+entose_generation = ""
+start_date = ""
+end_date = ""
+hdam_type_support = true
+hror_type_support = false
+
+[SE4]
+COUNTRY = ""
+iso_code = "SE"
+Entsoe = "SE_4"
+eSett = "SE4"
+PECD2 = [ "SE04",]
+entose_reservoir_rate = "20141006"
+entose_pumped = ""
+entose_ror = ""
+entose_generation = ""
+start_date = ""
+end_date = ""
+hdam_type_support = true
+hror_type_support = false
+
+[CH]
+COUNTRY = "Switzerland"
+iso_code = "CH"
+Entsoe = "CH"
+eSett = ""
+PECD2 = [ "CH00",]
+entose_reservoir_rate = "20150406"
+entose_pumped = "20150701"
+entose_ror = "20180101"
+entose_generation = "20150701"
+start_date = ""
+end_date = ""
+hdam_type_support = true
+hror_type_support = true
+
+[PL]
+COUNTRY = ""
+iso_code = "PL"
+Entsoe = ""
+eSett = ""
+PECD2 = [ "PL01", "PL02", "PL03", "PL04", "PL05",]
+entose_reservoir_rate = ""
+entose_pumped = ""
+entose_ror = ""
+entose_generation = ""
+start_date = ""
+end_date = ""
+hdam_type_support = false
+hror_type_support = true
+
+[SK]
+COUNTRY = ""
+iso_code = "SK"
+Entsoe = ""
+eSett = ""
+PECD2 = [ "SK00",]
+entose_reservoir_rate = ""
+entose_pumped = ""
+entose_ror = ""
+entose_generation = ""
+start_date = ""
+end_date = ""
+hdam_type_support = false
+hror_type_support = true
+
+[UK]
+COUNTRY = "United Kingdom"
+iso_code = "GB"
+Entsoe = ""
+eSett = ""
+PECD2 = [ "UK01", "UK02", "UK03", "UK04", "UK05", "UKNI",]
+entose_reservoir_rate = ""
+entose_pumped = ""
+entose_ror = ""
+entose_generation = ""
+start_date = ""
+end_date = ""
+hdam_type_support = false
+hror_type_support = true
