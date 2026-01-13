@@ -47,15 +47,17 @@ class CheckFillData:
             input_data.loc[date_range[-1]]=input_data.iloc[-1]
             missed_length=len(date_range)-len(input_data.index)+1
             
-        if input_data.index[0]!=date_range[0]:
+        elif input_data.index[0]!=date_range[0]:
             input_data.loc[date_range[0]]=input_data.iloc[0]
             missed_length=len(date_range)-len(input_data.index)+1
                 
-        if len(input_data.index)!=len(date_range):
+        elif len(input_data.index)!=len(date_range):
             missed_length=len(date_range)-len(input_data.index)
             input_data=input_data.resample(freq).asfreq()
             input_data=input_data.interpolate(method='linear')
             #print(f"{missed_length} data points are missing")
+        else:
+            pass
         
             return pd.DataFrame(input_data)
         

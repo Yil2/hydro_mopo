@@ -59,7 +59,6 @@ class FetchPath:
     def __init__(self, config_obj):
         self.path_dict = {}
         self.__spine_gen_dir = []
-        self.geo_range = None
         self.__set_file_path(config_obj)
         self.__create_dir()
         

@@ -66,25 +66,25 @@ class EntsoeDataProcess:
     def entsoe_request(self, data_type: str, area: str, start_date: str, end_date: str, country_code: str) -> pd.DataFrame:
         assert area in self.__area_code, "Unsupported area code"
 
-        start = pd.Timestamp(start_date, tz=self.__time_zone)
-        end = pd.Timestamp(end_date, tz=self.__time_zone)
+        start_time = pd.to_datetime(str(start_date), format="%Y%m%d", utc=True)
+        end_time = pd.to_datetime(str(end_date), format="%Y%m%d", utc=True)
 
         data_config = {
             "Reservoir rate": {
                 "file_suffix": "reservoir rate",
-                "query_func": lambda: self.client.query_aggregate_water_reservoirs_and_hydro_storage(area, start=start, end=end)
+                "query_func": lambda: self.client.query_aggregate_water_reservoirs_and_hydro_storage(area, start=start_time, end=end_time)
             },
             "Reservoir generation": {
                 "file_suffix": "reservoir generation",
-                "query_func": lambda: self.client.query_generation(area, start=start, end=end, psr_type=self.__prstype["hydro_water_reservoir"])
+                "query_func": lambda: self.client.query_generation(area, start=start_time, end=end_time, psr_type=self.__prstype["hydro_water_reservoir"])
             },
             "Pumped Storage": {
                 "file_suffix": "pump_generation",
-                "query_func": lambda: self.client.query_generation(area, start=start, end=end, psr_type=self.__prstype["hydro_pumped_storage"])
+                "query_func": lambda: self.client.query_generation(area, start=start_time, end=end_time, psr_type=self.__prstype["hydro_pumped_storage"])
             },
             "Run of river": {
                 "file_suffix": "ror_generation",
-                "query_func": lambda: self.client.query_generation(area, start=start, end=end, psr_type=self.__prstype["hydro_river_and_poundage"])
+                "query_func": lambda: self.client.query_generation(area, start=start_time, end=end_time, psr_type=self.__prstype["hydro_river_and_poundage"])
             }
         }
 
