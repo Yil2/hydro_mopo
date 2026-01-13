@@ -140,7 +140,7 @@ class ReadProcessInflow:
         #     inflow.loc[content.index[t]]=content.iloc[t,0]-content.iloc[t-1,0]+generation.iloc[t,0] 
         # inflow['Inflow weekly']=pd.to_numeric(inflow['Inflow weekly'], errors='coerce')
         
-        threshold=3
+        threshold=2
         #TODO:CH threshold=2
         diff=content.diff().diff()
         z_scores=(diff-diff.mean())/diff.std()

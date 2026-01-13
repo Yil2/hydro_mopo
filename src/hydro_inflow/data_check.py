@@ -56,10 +56,11 @@ class CheckFillData:
             input_data=input_data.resample(freq).asfreq()
             input_data=input_data.interpolate(method='linear')
             #print(f"{missed_length} data points are missing")
+        
         else:
             pass
         
-            return pd.DataFrame(input_data)
+        return pd.DataFrame(input_data)
         
     def check_duplicate_data(input_data:pd.DataFrame)->pd.DataFrame:
         

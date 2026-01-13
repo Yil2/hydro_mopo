@@ -100,7 +100,7 @@ class FetchInflow():
         history_data_path = path_obj.path_dict['history_data_path']
         ror_path = path_obj.path_dict['data_file']
         image_path = history_data_path / f"{code}_historical_ror_inflow.pdf"
-        ror.to_csv(ror_path,sep=';')
+        ror.to_csv(ror_path,sep=',')
 
         ror.plot(figsize=(12,5), label='Run of River Weekly')
         plt.title(f"ROR generation in {code}")
@@ -173,13 +173,13 @@ class FetchInflow():
         skip_fetch = False
         if code in self.esett_country_list:
             start_date='20170101'
-            end_date='20250101'    
+            end_date='20260101'    
         elif gen_time == '' or reser_time == '':
             print(f'entose_generation time: {gen_time}, entose_reservoir_rate time: {reser_time} from country :[{code}] is empty, skipped fetching')
             skip_fetch = True
         else:
-            start_date = max(int(gen_time), int(reser_time))
-            end_date = '20250101'
+            start_date = max(int(gen_time), int(reser_time))   #TODO: DECIDE IF USE 2015 DATA
+            end_date = '20260101'
         return start_date, end_date, skip_fetch
 
 
@@ -211,9 +211,9 @@ class FetchInflow():
         start_time= reservoir_generation.index[0]
         end_time=reservoir_generation.index[-1]
         date_range=cfd.create_date_range(start_time, end_time,'h')
-        reservoir_generation=cfd.check_duplicate_data(reservoir_generation)
-        reservoir_generation=cfd.check_missing_data(reservoir_generation, date_range)  
-        reservoir_generation=cfd.check_negative_data(reservoir_generation)
+        # reservoir_generation=cfd.check_duplicate_data(reservoir_generation)
+        # reservoir_generation=cfd.check_missing_data(reservoir_generation, date_range)  
+        # reservoir_generation=cfd.check_negative_data(reservoir_generation)
         
         reservoir_rate.index = reservoir_rate.index.normalize()  #some countries do not use midnight time
         start_time= reservoir_rate.index[0]
@@ -302,7 +302,7 @@ class FetchInflow():
 
         history_data_path = path_obj.path_dict['history_data_path']
         inflow_path = path_obj.path_dict['data_file']
-        inflow_weekly.to_csv(inflow_path,sep=';')
+        inflow_weekly.to_csv(inflow_path,sep=',')
         print(f'Save historical inflow for {code}--->Finished')
         
         #____________________plot and save the historical inflow data _____________________________
