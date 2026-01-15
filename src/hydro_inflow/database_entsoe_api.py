@@ -1,4 +1,5 @@
 # entsoe data request API package 
+import sys
 from entsoe import EntsoePandasClient
 #from entsoe import EntsoeRawClient
 from pandas import Timestamp,read_csv
@@ -102,22 +103,12 @@ class EntsoeDataProcess:
         else:
             requested_data = config["query_func"]()
             #Cases with bad datacolumns for some areas
-            if data_type == "Reservoir generation":
-                if area in ['FR','ITCS','ITSI']:
-                    requested_data['Updated Generation'] = (
-                    requested_data[('Hydro Water Reservoir', 'Actual Aggregated')].fillna(0) +
-                    requested_data["Hydro Water Reservoir"].fillna(0)
-                    )
-                    requested_data= requested_data['Updated Generation']
-                elif area == 'PT':
-                    requested_data['Updated Generation'] = requested_data[('Hydro Water Reservoir', 'Actual Aggregated')].fillna(0)
-                    requested_data= requested_data['Updated Generation']
-                else:
-                    pass
-
+            if area == 'ITCS':
+                dam_gen = data_config["Reservoir generation"]["query_func"]()
             else:
-                pass
+                dam_gen = None
 
+            requested_data = self.format_process(data_type, area, requested_data, dam_gen)
             requested_data.to_csv(data_path)
 
         print(f"Retrieve entsoe data: {country_code}_{data_type} ---> Finished")
@@ -148,3 +139,53 @@ class EntsoeDataProcess:
         print(f"Retrieve entsoe data: {country_code}_price--->Finished")
         
         return pd.DataFrame(request_price)
+
+
+    def format_process(self, data_type, area, data_df, dam_gen=None):
+    
+        if data_type == "Reservoir generation":
+            if area in ['FR','ITCS','ITSI']:
+                data_df['Updated Generation'] = (
+                data_df[('Hydro Water Reservoir', 'Actual Aggregated')].fillna(0) +
+                data_df["Hydro Water Reservoir"].fillna(0)
+                )
+                data_df= data_df['Updated Generation']
+            elif area == 'PT':
+                data_df['Updated Generation'] = data_df[('Hydro Water Reservoir', 'Actual Aggregated')].fillna(0)
+                data_df= data_df['Updated Generation']
+            else:
+                pass
+
+        elif data_type == "Run of river":
+            ror_filled = data_df.fillna(0)
+
+            if area in ['AT','DK','IE','PT']:
+                data_df['ror'] = (ror_filled[('Hydro Run-of-river and poundage', 'Actual Aggregated')] + 
+                            ror_filled[('Hydro Run-of-river and poundage', 'Actual Consumption')])
+                data_df = pd.DataFrame(data_df['ror'])
+
+            elif area in ['FI','FR','ITSA','SI']:
+                data_df['ror'] = (ror_filled[('Hydro Run-of-river and poundage', 'Actual Aggregated')] + 
+                            ror_filled['Hydro Run-of-river and poundage'])
+                data_df = pd.DataFrame(data_df['ror'])
+
+            elif area == 'ITCS':
+                # ITSI has connection error of entsoe, but little reservoir generation, neglect
+                try:
+                    dam_gen_filled = dam_gen.fillna(0)
+
+                except Exception as e:
+                    print(f'Fetching {area} Reservoir generation from ENTSOE API failed: {e}')
+                    sys.exit(1)
+                
+                requested_data['ror'] = (ror_filled['Hydro Run-of-river and poundage'] + 
+                            dam_gen_filled[('Hydro Water Reservoir', 'Actual Aggregated')] + 
+                            dam_gen_filled['Hydro Water Reservoir'])
+                
+                requested_data = pd.DataFrame(requested_data['ror'])
+            else:
+                pass
+        else:
+            pass
+
+        return data_df

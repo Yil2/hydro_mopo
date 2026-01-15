@@ -80,12 +80,12 @@ class FetchPath:
         self.path_dict['history_data_path'] = history_data_path
         self.path_dict["glofas_cdf_path"] = config_obj.config['glofas_cdf_path']
         self.path_dict['osm_filepath'] = history_data_path / (country_code + '_hydropower_plants.geojson')
-        self.path_dict['disc_file'] = history_data_path / (country_code + '_glofas_discharge.csv')
+        self.path_dict['disc_file'] = history_data_path / (country_code +'_' + type + '_glofas_discharge.csv')
 
 
         method = config_obj.config['algorithm']
         solution_dir = Path(config_obj.config['solution_dir'])
-        self.path_dict['pred_data_path'] = solution_dir / str(method) / 'predicted_inflow'
+        self.path_dict['pred_data_path'] = solution_dir / str(method) / type
         self.path_dict['his_eq_path'] = solution_dir / 'Historical_production'
         self.path_dict['his_price_path'] = solution_dir / 'price'
         self.path_dict['figs_path_hdam'] = solution_dir / str(method)  / 'figs' / 'hdam'
