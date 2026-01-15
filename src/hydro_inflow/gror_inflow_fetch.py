@@ -185,17 +185,17 @@ class FetchInflow():
 
     def __process_reservior_data(self, reservoir_generation, reservoir_rate, code):
 
-        if code in ['FR','ITCS','ITSI']:
-            reservoir_generation['New_gen'] = (
-                    reservoir_generation["('Hydro Water Reservoir', 'Actual Aggregated')"].fillna(0) +
-                    reservoir_generation["Hydro Water Reservoir"].fillna(0)
-                    )
+        # if code in ['FR','ITCS','ITSI']:
+        #     reservoir_generation['New_gen'] = (
+        #             reservoir_generation["('Hydro Water Reservoir', 'Actual Aggregated')"].fillna(0) +
+        #             reservoir_generation["Hydro Water Reservoir"].fillna(0)
+        #             )
             
-            reservoir_generation.drop(columns=[col for col in reservoir_generation.columns if col != 'New_gen'], inplace=True)
-        elif code in ['PT']:
-            reservoir_generation['New_gen'] = reservoir_generation[
-                ('Hydro Water Reservoir', 'Actual Aggregated')] #negelect the consumption here as they are so small(1-4MWh)
-            reservoir_generation=pd.DataFrame(reservoir_generation['New_gen'])
+        #     reservoir_generation.drop(columns=[col for col in reservoir_generation.columns if col != 'New_gen'], inplace=True)
+        # elif code in ['PT']:
+        #     reservoir_generation['New_gen'] = reservoir_generation[
+        #         ('Hydro Water Reservoir', 'Actual Aggregated')] #negelect the consumption here as they are so small(1-4MWh)
+        #     reservoir_generation=pd.DataFrame(reservoir_generation['New_gen'])
     
         reservoir_generation.columns=['Reservoir generation']
         reservoir_generation=rpi.index_date(reservoir_generation,'Reservoir generation')

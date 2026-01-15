@@ -38,7 +38,7 @@ class OverpassAPI:
             r = requests.post(url, data={"data": query}, timeout=300)
             if r.status_code == 200:
                 return r.json()
-            # Basic backoff for 429 / 504 / 5xx
+            
             sleep_s = min(60, 2 ** attempt)
             time.sleep(sleep_s)
         r.raise_for_status()

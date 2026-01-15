@@ -101,6 +101,23 @@ class EntsoeDataProcess:
             requested_data.index = pd.to_datetime(requested_data.index, errors='coerce', utc=True)
         else:
             requested_data = config["query_func"]()
+            #Cases with bad datacolumns for some areas
+            if data_type == "Reservoir generation":
+                if area in ['FR','ITCS','ITSI']:
+                    requested_data['Updated Generation'] = (
+                    requested_data[('Hydro Water Reservoir', 'Actual Aggregated')].fillna(0) +
+                    requested_data["Hydro Water Reservoir"].fillna(0)
+                    )
+                    requested_data= requested_data['Updated Generation']
+                elif area == 'PT':
+                    requested_data['Updated Generation'] = requested_data[('Hydro Water Reservoir', 'Actual Aggregated')].fillna(0)
+                    requested_data= requested_data['Updated Generation']
+                else:
+                    pass
+
+            else:
+                pass
+
             requested_data.to_csv(data_path)
 
         print(f"Retrieve entsoe data: {country_code}_{data_type} ---> Finished")
