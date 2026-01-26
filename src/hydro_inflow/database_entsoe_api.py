@@ -37,6 +37,8 @@ class EntsoeDataProcess:
         self.__local_data_path = config_obj.config['data_dir']
 
         self.__time_zone = "UTC"
+
+        self.input_code = config_obj.country_code
         #logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
     # request_data 
@@ -103,12 +105,12 @@ class EntsoeDataProcess:
         else:
             requested_data = config["query_func"]()
             #Cases with bad datacolumns for some areas
-            if area == 'ITCS':
+            if area == 'IT_CSUD':
                 dam_gen = data_config["Reservoir generation"]["query_func"]()
             else:
                 dam_gen = None
 
-            requested_data = self.format_process(data_type, area, requested_data, dam_gen)
+            requested_data = self.format_process(data_type, self.input_code, requested_data, dam_gen)
             requested_data.to_csv(data_path)
 
         print(f"Retrieve entsoe data: {country_code}_{data_type} ---> Finished")
@@ -137,6 +139,10 @@ class EntsoeDataProcess:
         request_price=self.client.query_day_ahead_prices(area, start=start, end=end)
         
         print(f"Retrieve entsoe data: {country_code}_price--->Finished")
+    
+        file_name = f"{country_code}_{start_date}_{end_date}_price.csv"
+        data_path = Path(__file__).parent / self.__local_data_path / country_code / file_name
+        request_price.to_csv(data_path)
         
         return pd.DataFrame(request_price)
 
@@ -150,7 +156,7 @@ class EntsoeDataProcess:
                 data_df["Hydro Water Reservoir"].fillna(0)
                 )
                 data_df= data_df['Updated Generation']
-            elif area == 'PT':
+            elif area in ['PT', 'AT']:
                 data_df['Updated Generation'] = data_df[('Hydro Water Reservoir', 'Actual Aggregated')].fillna(0)
                 data_df= data_df['Updated Generation']
             else:
@@ -171,18 +177,13 @@ class EntsoeDataProcess:
 
             elif area == 'ITCS':
                 # ITSI has connection error of entsoe, but little reservoir generation, neglect
-                try:
-                    dam_gen_filled = dam_gen.fillna(0)
+                dam_gen_filled = dam_gen.fillna(0)
 
-                except Exception as e:
-                    print(f'Fetching {area} Reservoir generation from ENTSOE API failed: {e}')
-                    sys.exit(1)
-                
-                requested_data['ror'] = (ror_filled['Hydro Run-of-river and poundage'] + 
+                data_df['ror'] = (ror_filled['Hydro Run-of-river and poundage'] + 
                             dam_gen_filled[('Hydro Water Reservoir', 'Actual Aggregated')] + 
                             dam_gen_filled['Hydro Water Reservoir'])
                 
-                requested_data = pd.DataFrame(requested_data['ror'])
+                data_df = pd.DataFrame(data_df['ror'])
             else:
                 pass
         else:

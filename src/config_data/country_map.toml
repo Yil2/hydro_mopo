@@ -4,13 +4,13 @@ iso_code = "AT"
 Entsoe = "AT"
 eSett = ""
 PECD2 = [ "AT01", "AT02", "AT03",]
-entose_reservoir_rate = ""
+entose_reservoir_rate = "20150105"
 entose_pumped = "20181001"
 entose_ror = "20181001"
 entose_generation = "20181001"
 start_date = ""
 end_date = "20211231"
-hdam_type_support = false
+hdam_type_support = true
 hror_type_support = true
 
 [BE]
@@ -226,7 +226,7 @@ hror_type_support = true
 [ITCS]
 COUNTRY = ""
 iso_code = "IT"
-Entsoe = "IT_CSUD"
+Entsoe = ""
 eSett = ""
 PECD2 = [ "ITCS",]
 entose_reservoir_rate = "20150112"

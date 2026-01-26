@@ -176,3 +176,6 @@ cython_debug/
 #user token config
 src/config_data/user_config.toml
 
+
+#local jupyter notebooks
+.ipynb

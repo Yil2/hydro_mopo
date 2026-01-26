@@ -10,11 +10,11 @@ import matplotlib.pyplot as plt
 
 class DatabaseGlofasAPI:
     #DATASET = "glofas river discharge: daily resolution"
-    #TODO: change to flexible year and month
-    REQUEST_YEAR=["1991","1992","1993","1994","1995","1996","1997","1998","1999","2000",
-                "2001","2002","2003","2004","2005","2006","2007","2008","2009","2010",
-                "2011","2012","2013","2014","2015","2016","2017","2018","2019","2020",
-                "2021", "2022", "2023","2024"]
+    #TODO: change to flexible year and region from config
+    # REQUEST_YEAR=["1991","1992","1993","1994","1995","1996","1997","1998","1999","2000",
+    #             "2001","2002","2003","2004","2005","2006","2007","2008","2009","2010",
+    #             "2011","2012","2013","2014","2015","2016","2017","2018","2019","2020",
+    #             "2021", "2022", "2023","2024"]
     
     REQUEST_MONTH=["01","02","03","04","05","06","07","08","09","10","11","12"]
 
@@ -29,22 +29,40 @@ class DatabaseGlofasAPI:
             'hror' : 'run-of-the-river',
             'pumped':'water-pumped-storage'
         }
+        if self.config['pred_years'] == 'None':
+            self.pred_years = list(range(2015, 2025))  # default prediction years
+        elif self.config['pred_years'] == 'all':
+            self.pred_years = list(range(1980, 2025))
+        else:
+            self.pred_years = self.config['pred_years']   
 
 
-    def read_cdf(self, files, dim):
-        def process_one_path(path):
-            cdf_path=path
-            ds = xr.open_dataset(cdf_path, engine="netcdf4")
-            ds_copy = ds.load()  # Force load all data into memory
-            ds.close()           # Manually close the file
-            return ds_copy
+    def read_cdf(self, files, dim, years, determine_local_points = True):
+        paths_all = sorted(glob(files))
+        if determine_local_points:
+            paths =[p for p in paths_all if int(str(p).split("_")[0].split('\\')[-1]) == 2024 ]  
+            #determine accuracte local points by 2024 data
 
-        paths=sorted(glob(files))
-        dataset = [process_one_path(path) for path in paths]
+        else:
+            paths =[p for p in paths_all if int(str(p).split("_")[0].split('\\')[-1]) in years
+                    or int(str(p).split("_")[0].split('\\')[-1])>=2015] # default prediction years should be extracted for training
 
-        return xr.concat(dataset, dim=dim)
+        #only read necessary years to save memory
+
+        ds = xr.open_mfdataset(
+            paths,
+            combine="nested",        
+            concat_dim=dim,
+            parallel=False,
+            engine="netcdf4",
+            chunks={dim: 200},        # TODO: tune chunk size
+            data_vars="minimal",
+            coords="minimal",
+            compat="override",
+        )
+        return ds
         
-    def request_data(self, REQUEST_YEAR, REQUEST_MONTH ): 
+    def request_data(self, REQUEST_MONTH): 
 
         path = self.path_dict["glofas_cdf_path"]
         if not os.path.exists(path):
@@ -52,6 +70,7 @@ class DatabaseGlofasAPI:
 
         files = sorted(glob(os.path.join(path, "*.nc")))
         if len(files) == 0:
+        #TODO: request years not in local
             request_cdf = True
         else:
             request_cdf = False
@@ -59,7 +78,7 @@ class DatabaseGlofasAPI:
 
         if request_cdf:
             print("Request cdf remotely......")
-            for year in REQUEST_YEAR:
+            for year in self.pred_years:
                 for month in REQUEST_MONTH:
                     dataset = "cems-glofas-historical"
                     request = {
@@ -84,13 +103,14 @@ class DatabaseGlofasAPI:
                     client.retrieve(dataset, request, os.path.join(path,f"{year}_{month}_00utc.nc"))
                     print(f"Retrieve {year}_{month} successfully") 
             print("Reading cdf locally......")
-            data = self.read_cdf(f"{path}/*.nc", "valid_time")
-            return data
+            #data = self.read_cdf(f"{path}/*.nc", "valid_time")
+            #return data
         
         else:
             print("Reading cdf locally......")
-            data = self.read_cdf(f"{path}/*.nc", "valid_time")
-            return data
+            # data = self.read_cdf(f"{path}/*.nc", "valid_time", determine_local_points=False)
+            # return data
+            
 
     def sjoin_gdf(self, gdf1, gdf2):
 
@@ -122,34 +142,39 @@ class DatabaseGlofasAPI:
         ]
         return points
 
-
-
-    def extract_values(self, row, variable_name, ds):
-        points = self.create_buffer(row)
+    def determine_local_points(self, points, variable_name, ds):
         vals = []
         for plat, plon in points:
             val = ds[variable_name].sel(latitude=plat, longitude=plon, method='nearest').values
             vals.append(val)
         
         vals = pd.DataFrame(vals)
-        #print(vals)
         vals.index= np.arange(5)
         #vals_reshaped = vals.reshape_values('dis24', pd.date_range(data['valid_time'].values[0], data['valid_time'].values[-1], freq='d').shift(-1), points)
         max_point = points[vals.mean(axis=1).idxmax()]
-        print("max point", vals.mean(axis=1).idxmax()+1, max_point,  )
-        lat_final, lon_final = max_point
+        print("max point", vals.mean(axis=1).idxmax()+1, max_point  )
+       # lat_final, lon_final = max_point
     
-        return ds[variable_name].sel(latitude=lat_final, longitude=lon_final, method='nearest').values
+        return max_point
 
-    def reshape_values(self,var, time_range, grids):
-            reshape_dict={}
-            i=0
-            for row in grids[var]:
-                reshape_dict[f"plant_{i}"]=row
-                i=i+1
-            df_reshaped=pd.DataFrame(reshape_dict, index=pd.to_datetime(time_range))
 
-            return df_reshaped
+    def extract_values(self, ds, variable_name, plant_loc):
+
+        lats = xr.DataArray(plant_loc["lat"].to_numpy(), dims="site")
+        lons = xr.DataArray(plant_loc["lon"].to_numpy(), dims="site")
+
+        da = ds[variable_name].sel(latitude=lats, longitude=lons, method="nearest")
+
+        return da
+    
+        
+    
+
+    def reshape_values(self, da, time_dim="valid_time"):
+        # da dims: (valid_time, site)
+        df = da.to_pandas()  # index=valid_time, columns=site
+        df.columns = [f"plant_{i}" for i in range(df.shape[1])]
+        return df
         
 
     def geo_process(self):
@@ -157,11 +182,8 @@ class DatabaseGlofasAPI:
         osm_data = gpd.read_file(self.path_dict['osm_filepath'])
 
         osm_data['plant:method'] = osm_data['plant:method'].fillna('water-storage')
-        # Documentation: Assumption 1: fill NaN with water-storage
-        
+        # Documentation: Assumption 1: fill NaN with water-storage  
         plants = osm_data[osm_data['plant:method'] == self.osm_method[self.hydro_type]]
-
-
         plants = plants[plants['geometry'].notna()]
         
         onshore_geo = gpd.read_file(self.path_dict['onshore_filepath'])
@@ -169,6 +191,8 @@ class DatabaseGlofasAPI:
 
         zone = pecd2_geo[pecd2_geo['id'].isin(self.pecd2_code)]
         plants_in_zone = self.sjoin_gdf(plants, zone).reset_index(drop=True)
+        #TODO: check the installed capacity in OSM data
+        #plants_large =...
 
         fig, ax = plt.subplots(figsize=(8, 8))
         zone.boundary.plot(ax=ax, color='black')
@@ -182,25 +206,70 @@ class DatabaseGlofasAPI:
     
     def save_disc_main(self):
 
-        if self.path_dict['disc_file'].exists():
-            print(f"File {self.path_dict['disc_file']} already exists. Skipping...")
+        disc_files = sorted(glob(os.path.join(self.path_dict['history_data_path'], 
+                            f"{self.country_code}_{self.hydro_type}_*glofas_discharge.csv")))
+
+        extracted_years = self.pred_years.copy() if isinstance(self.pred_years, list) else list(self.pred_years)
+        existing_disc = None
+
+        if disc_files:
+            existing_disc = pd.concat(
+            [pd.read_csv(f, index_col=0, parse_dates=True) for f in disc_files],
+            axis=0
+            ).drop_duplicates(keep='first')
+            
+            # Filter to only keep years in pred_years
+            existing_disc = existing_disc[existing_disc.index.year.isin(self.pred_years)]
+            
+            # Extract years not yet saved locally
+            extracted_years = [y for y in self.pred_years if y not in existing_disc.index.year.unique()]
+
+        if not extracted_years:
+            print(f"File {self.path_dict['disc_file']} exists. Skipping...")
         else:
-            print(f"Retriving {self.country_code} Glofas River discharge data...")
-
-            plants_in_zone = self.geo_process()
-            data = self.request_data(self.REQUEST_YEAR, self.REQUEST_MONTH)
-
-            plant_loc = pd.concat([plants_in_zone.geometry.x, plants_in_zone.geometry.y], axis=1)
-            plant_loc.columns = ['lon', 'lat']
-
+            print(f"Retrieving {self.country_code} Glofas River discharge data for years: {extracted_years}")
+            self.request_data(self.REQUEST_MONTH)
+            loc_file = self.path_dict['history_data_path'] / f'{self.country_code}_{self.hydro_type}_plants_location.xlsx'
             var = 'dis24'
 
-            plant_loc[var] = plant_loc.apply(
-                lambda row: self.extract_values(row, var, data), axis=1)
+            if loc_file.exists(): 
+                plant_loc = pd.read_excel(loc_file)
+                plant_loc.columns = ['lon', 'lat', 'plant:output:electricity']
+                print(f"{self.country_code} plant location file loaded.") 
 
-            data_local = self.reshape_values(var, pd.date_range(data['valid_time'].values[0], data['valid_time'].values[-1], freq='d').shift(-1), plant_loc)
+            else:  
+                plants_in_zone = self.geo_process()
+                plant_loc = pd.concat([plants_in_zone.geometry.x, plants_in_zone.geometry.y, plants_in_zone['plant:output:electricity']], axis=1)
+                plant_loc.columns = ['lon', 'lat', 'plant:output:electricity']
 
+                area_margin = False
+                #TODO: if need to check the area margin?
+
+                if area_margin:
+                    for i in range(plant_loc.shape[0]):
+                        points = self.create_buffer(plant_loc.iloc[i], buffer = 0.025)
+                        max_point = self.determine_local_points(points, var, self.read_cdf(f"{self.path_dict['glofas_cdf_path']}/*.nc", "valid_time", determine_local_points=True))
+                        plant_loc.iloc[i] = max_point
+                else:
+                    pass
+                    
+                plant_loc.to_excel(loc_file, index=False)
+                print(f"{self.country_code} plant location file saved.")
+
+            data = self.read_cdf(f"{self.path_dict['glofas_cdf_path']}/*.nc", "valid_time", years = extracted_years, determine_local_points=False)
+            print("Glofas data read completed.")
+            da = self.extract_values(data, var, plant_loc)
+
+            
+            da = da.chunk({"valid_time": -1})   
+            da = da.compute()                  # one compute
+            data_local = self.reshape_values(da)
+
+            if existing_disc is not None:
+                data_local = pd.concat([existing_disc, data_local], axis=0).sort_index()
+            else :
+                pass
             data_local.to_csv(self.path_dict['disc_file'], index=True)
 
             print(f"{self.country_code} Glofas River discharge data: Done")
-    
+

@@ -12,8 +12,10 @@ from pandas import read_csv
 
 class ReadProcessInflow:
         
-    def read_local_data (file_path):
-        return read_csv(file_path)
+    def read_local_data (file_path, sep = ',', index_col = 0):
+        data = read_csv(file_path, sep = sep, index_col = index_col)
+        data.index = pd.to_datetime(data.index, utc=True)
+        return data
     
     
     def index_date(input_data:pd.DataFrame, value_column:str)->pd.DataFrame:
@@ -69,8 +71,7 @@ class ReadProcessInflow:
     def pre_process(sampledata,datatime_column, value_column):
         sampledata=sampledata.dropna(how='any')
         sampledata[value_column]=sampledata[value_column].astype(float)
-        sampledata[datatime_column] = pd.to_datetime(sampledata[datatime_column],utc=True)
-                                                                                                       
+        sampledata[datatime_column] = pd.to_datetime(sampledata[datatime_column],utc=True)                                                                                                      
                                                                 
         sampledata.set_index(datatime_column, inplace=True)
         sampledata.index = pd.to_datetime(sampledata.index, utc=True)
@@ -132,16 +133,9 @@ class ReadProcessInflow:
         pd.DataFrame
             The calculated inflow data.
         """
-
-        #content = content.apply(pd.to_numeric, errors='coerce')
-        #generation = generation.apply(pd.to_numeric, errors='coerce')
-        # inflow=pd.DataFrame(index=content.index[1:], columns=['Inflow weekly']) 
-        # for t in range(1, len(generation)):
-        #     inflow.loc[content.index[t]]=content.iloc[t,0]-content.iloc[t-1,0]+generation.iloc[t,0] 
-        # inflow['Inflow weekly']=pd.to_numeric(inflow['Inflow weekly'], errors='coerce')
         
         threshold=2
-        #TODO:CH threshold=2
+        #Remove big fluctuation between weeks
         diff=content.diff().diff()
         z_scores=(diff-diff.mean())/diff.std()
         diff_mask=diff.copy()
@@ -153,19 +147,6 @@ class ReadProcessInflow:
         
         inf_orginal=pd.DataFrame(content_mask.diff().dropna(), index=content.index[1:]).values+pd.DataFrame(generation.iloc[:-1,0], index=content.index[1:]).values
         inf_orginal=pd.DataFrame(inf_orginal, index=content.index[1:])
-        
-#Assume Spillage?
-        # spill=pd.DataFrame(0, index=inf_orginal.index, columns=inf_orginal.columns)
-        # for i in range(1, len(inf_orginal)):
-        #     if inf_orginal.iloc[i,0]<0:
-        #         spill.iloc[i,0]=-inf_orginal.iloc[i,0]
-        #     else:
-        #         spill.iloc[i,0]=0
-
-        # inf_update=inf_orginal+spill*1.2
-#TODO: CHECK NEGATIVE VALUE
-        # inf_orginal=inf_orginal.mask(inf_orginal<0, None)
-        # inf_update=inf_orginal.interpolate(method='linear')
 
         inf_orginal[inf_orginal<0]=0
         return pd.DataFrame(inf_orginal)
@@ -182,9 +163,7 @@ class ReadProcessInflow:
         
         return data
     
-            
-    
-            
+                     
     def save_inflow_fig(data:pd.DataFrame, path:str, country_code:str)->None:
 
         """
