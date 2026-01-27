@@ -24,6 +24,7 @@ class DatabaseGlofasAPI:
         self.country_code = config_obj.country_code
         self.pecd2_code = config_obj.map[self.country_code]['PECD2']
         self.hydro_type = config_obj.hydro_type
+        self.var = 'dis24'
         self.osm_method = {
             'hdam' : 'water-storage', 
             'hror' : 'run-of-the-river',
@@ -35,6 +36,7 @@ class DatabaseGlofasAPI:
             self.pred_years = list(range(1980, 2025))
         else:
             self.pred_years = self.config['pred_years']   
+        #FIXME: move to config data validation
 
 
     def read_cdf(self, files, dim, years, determine_local_points = True):
@@ -62,55 +64,33 @@ class DatabaseGlofasAPI:
         )
         return ds
         
-    def request_data(self, REQUEST_MONTH): 
+    def request_data(self, REQUEST_YEAR, REQUEST_MONTH, path): 
+        print("Request cdf remotely......")
+        for year in REQUEST_YEAR:
+            for month in REQUEST_MONTH:
+                dataset = "cems-glofas-historical"
+                request = {
+                    "system_version": ["version_4_0"],
+                    "hydrological_model": ["lisflood"],
+                    "product_type": ["consolidated"],
+                    "variable": ["river_discharge_in_the_last_24_hours"],
+                    "hyear": year,
+                    "hmonth": month,
+                    "hday": [
+                        "01", "02", "03","04", "05", "06", "07", "08", "09", "10", "11", "12",
+                        "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24",
+                        "25","26","27","28","29","30","31"
+                    ],
+                    "data_format": "netcdf4",
+                    "download_format": "unarchived",
+                    "area": [72, -25, 34, 45]  # TODO: change to bounding box of defined area
+                }
 
-        path = self.path_dict["glofas_cdf_path"]
-        if not os.path.exists(path):
-            os.makedirs(path)
+                client = cdsapi.Client(url="https://ewds.climate.copernicus.eu/api")
+                
+                client.retrieve(dataset, request, os.path.join(path,f"{year}_{month}_00utc.nc"))
+                print(f"Retrieve {year}_{month} successfully") 
 
-        files = sorted(glob(os.path.join(path, "*.nc")))
-        if len(files) == 0:
-        #TODO: request years not in local
-            request_cdf = True
-        else:
-            request_cdf = False
-
-
-        if request_cdf:
-            print("Request cdf remotely......")
-            for year in self.pred_years:
-                for month in REQUEST_MONTH:
-                    dataset = "cems-glofas-historical"
-                    request = {
-                        "system_version": ["version_4_0"],
-                        "hydrological_model": ["lisflood"],
-                        "product_type": ["consolidated"],
-                        "variable": ["river_discharge_in_the_last_24_hours"],
-                        "hyear": year,
-                        "hmonth": month,
-                        "hday": [
-                            "01", "02", "03","04", "05", "06", "07", "08", "09", "10", "11", "12",
-                            "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24",
-                            "25","26","27","28","29","30","31"
-                        ],
-                        "data_format": "netcdf4",
-                        "download_format": "unarchived",
-                        "area": [72, -25, 34, 45]  # TODO: change to bounding box of defined area
-                    }
-
-                    client = cdsapi.Client(url="https://ewds.climate.copernicus.eu/api")
-                    
-                    client.retrieve(dataset, request, os.path.join(path,f"{year}_{month}_00utc.nc"))
-                    print(f"Retrieve {year}_{month} successfully") 
-            print("Reading cdf locally......")
-            #data = self.read_cdf(f"{path}/*.nc", "valid_time")
-            #return data
-        
-        else:
-            print("Reading cdf locally......")
-            # data = self.read_cdf(f"{path}/*.nc", "valid_time", determine_local_points=False)
-            # return data
-            
 
     def sjoin_gdf(self, gdf1, gdf2):
 
@@ -177,7 +157,7 @@ class DatabaseGlofasAPI:
         return df
         
 
-    def geo_process(self):
+    def __geo_process(self):
 
         osm_data = gpd.read_file(self.path_dict['osm_filepath'])
 
@@ -204,8 +184,7 @@ class DatabaseGlofasAPI:
 
         return plants_in_zone
     
-    def save_disc_main(self):
-
+    def __check_existing_disc(self):
         disc_files = sorted(glob(os.path.join(self.path_dict['history_data_path'], 
                             f"{self.country_code}_{self.hydro_type}_*glofas_discharge.csv")))
 
@@ -224,43 +203,75 @@ class DatabaseGlofasAPI:
             # Extract years not yet saved locally
             extracted_years = [y for y in self.pred_years if y not in existing_disc.index.year.unique()]
 
+        return existing_disc, extracted_years
+
+    def __check_existing_nc_file(self):
+        cds_path = self.path_dict["glofas_cdf_path"]
+        if not os.path.exists(cds_path):
+            os.makedirs(cds_path)
+
+        files = sorted(glob(os.path.join(cds_path, "*.nc")))
+        if len(files) == 0:
+            self.request_data(self.pred_years, self.REQUEST_MONTH, cds_path)
+        else:
+            existing_years = [os.path.splitext(os.path.basename(f))[0].split("_")[0] for f in files]
+            existing_years = list(map(int, existing_years))
+            missing_years = [y for y in self.pred_years if y not in existing_years]
+            #TODO: add missing months check
+            if missing_years:
+                self.request_data(missing_years, self.REQUEST_MONTH, cds_path)
+            else:
+                print("GloFAS raw data already exists. Skipping...")
+
+    def __check_existing_loc_file(self):
+
+        loc_file = self.path_dict['history_data_path'] / f'{self.country_code}_{self.hydro_type}_plants_location.xlsx'
+        
+        if loc_file.exists(): 
+            plant_loc = pd.read_excel(loc_file)
+            plant_loc.columns = ['lon', 'lat', 'plant:output:electricity']
+            print(f"{self.country_code} plant location file loaded.") 
+
+        else:  
+            plants_in_zone = self.__geo_process()
+            plant_loc = pd.concat([plants_in_zone.geometry.x, plants_in_zone.geometry.y, plants_in_zone['plant:output:electricity']], axis=1)
+            plant_loc.columns = ['lon', 'lat', 'plant:output:electricity']
+
+            area_margin = False
+            #TODO: if need to check the area margin?
+            if area_margin:
+                for i in range(plant_loc.shape[0]):
+                    points = self.create_buffer(plant_loc.iloc[i], buffer = 0.025)
+                    max_point = self.determine_local_points(points, self.var, self.read_cdf(f"{self.path_dict['glofas_cdf_path']}/*.nc", "valid_time", determine_local_points=True))
+                    plant_loc.iloc[i] = max_point
+            else:
+                pass
+                
+            plant_loc.to_excel(loc_file, index=False)
+            print(f"{self.country_code} plant location file saved.")
+
+        return plant_loc
+
+
+
+    def save_disc_main(self):
+
+        # Check if data already processed before
+        existing_disc, extracted_years = self.__check_existing_disc()
+
         if not extracted_years:
             print(f"File {self.path_dict['disc_file']} exists. Skipping...")
         else:
             print(f"Retrieving {self.country_code} Glofas River discharge data for years: {extracted_years}")
-            self.request_data(self.REQUEST_MONTH)
-            loc_file = self.path_dict['history_data_path'] / f'{self.country_code}_{self.hydro_type}_plants_location.xlsx'
-            var = 'dis24'
-
-            if loc_file.exists(): 
-                plant_loc = pd.read_excel(loc_file)
-                plant_loc.columns = ['lon', 'lat', 'plant:output:electricity']
-                print(f"{self.country_code} plant location file loaded.") 
-
-            else:  
-                plants_in_zone = self.geo_process()
-                plant_loc = pd.concat([plants_in_zone.geometry.x, plants_in_zone.geometry.y, plants_in_zone['plant:output:electricity']], axis=1)
-                plant_loc.columns = ['lon', 'lat', 'plant:output:electricity']
-
-                area_margin = False
-                #TODO: if need to check the area margin?
-
-                if area_margin:
-                    for i in range(plant_loc.shape[0]):
-                        points = self.create_buffer(plant_loc.iloc[i], buffer = 0.025)
-                        max_point = self.determine_local_points(points, var, self.read_cdf(f"{self.path_dict['glofas_cdf_path']}/*.nc", "valid_time", determine_local_points=True))
-                        plant_loc.iloc[i] = max_point
-                else:
-                    pass
-                    
-                plant_loc.to_excel(loc_file, index=False)
-                print(f"{self.country_code} plant location file saved.")
+            # if need to request cdf by api to local
+            self.__check_existing_nc_file()
+            #if need to process the location
+            plant_loc = self.__check_existing_loc_file()
 
             data = self.read_cdf(f"{self.path_dict['glofas_cdf_path']}/*.nc", "valid_time", years = extracted_years, determine_local_points=False)
             print("Glofas data read completed.")
-            da = self.extract_values(data, var, plant_loc)
+            da = self.extract_values(data, self.var, plant_loc)
 
-            
             da = da.chunk({"valid_time": -1})   
             da = da.compute()                  # one compute
             data_local = self.reshape_values(da)
@@ -269,7 +280,7 @@ class DatabaseGlofasAPI:
                 data_local = pd.concat([existing_disc, data_local], axis=0).sort_index()
             else :
                 pass
-            data_local.to_csv(self.path_dict['disc_file'], index=True)
 
+            data_local.to_csv(self.path_dict['disc_file'], index=True)
             print(f"{self.country_code} Glofas River discharge data: Done")
 

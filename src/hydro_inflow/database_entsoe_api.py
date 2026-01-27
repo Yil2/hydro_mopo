@@ -41,29 +41,7 @@ class EntsoeDataProcess:
         self.input_code = config_obj.country_code
         #logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-    # request_data 
-    def request_data(self, data_type, area, start_date, end_date):
 
-        assert area in self.__area_code, "unsupported area code"
-        start = Timestamp(start_date, tz=self.__time_zone)
-        end = Timestamp(end_date, tz=self.__time_zone)
-
-        if data_type == "Reservoir rate":
-            # Pandas Series
-            return self.client.query_aggregate_water_reservoirs_and_hydro_storage(area, start=start, end=end)
-        elif data_type == "Reservoir generation":
-            # Pandas Dataframe 1 row
-            return self.client.query_generation(area, start=start, end=end,psr_type=self.__prstype["hydro_water_reservoir"])
-        elif data_type == "Pumped Storage":
-            # Pandas Dataframe 1 row
-            return self.client.query_generation(area, start=start, end=end,psr_type=self.__prstype["hydro_pumped_storage"])
-        elif data_type == "Run of river":
-            # Pandas Dataframe 1 row
-            return self.client.query_generation(area, start=start, end=end,psr_type=self.__prstype["hydro_river_and_poundage"])
-        else:
-            raise ValueError("Unsupported data request.")
-                
-        
     # update local data
     # 
     def entsoe_request(self, data_type: str, area: str, start_date: str, end_date: str, country_code: str) -> pd.DataFrame:
@@ -110,7 +88,7 @@ class EntsoeDataProcess:
             else:
                 dam_gen = None
 
-            requested_data = self.format_process(data_type, self.input_code, requested_data, dam_gen)
+            requested_data = self.__format_process(data_type, self.input_code, requested_data, dam_gen)
             requested_data.to_csv(data_path)
 
         print(f"Retrieve entsoe data: {country_code}_{data_type} ---> Finished")
@@ -147,7 +125,7 @@ class EntsoeDataProcess:
         return pd.DataFrame(request_price)
 
 
-    def format_process(self, data_type, area, data_df, dam_gen=None):
+    def __format_process(self, data_type, area, data_df, dam_gen=None):
     
         if data_type == "Reservoir generation":
             if area in ['FR','ITCS','ITSI']:

@@ -15,7 +15,7 @@ def main():
     config_obj = ConfigData()
     config_obj.args_check(arg_obj.args)
     path_obj = FetchPath(config_obj)
-    #inflow_obj = FetchInflow(config_obj, path_obj, arg_obj.args)
+    FetchInflow(config_obj, path_obj, arg_obj.args)
     #TODO: if retrieve only historical data, then skip below
 
     osm_database_obj = OverpassAPI(config_obj, path_obj)

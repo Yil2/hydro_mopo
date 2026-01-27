@@ -17,7 +17,7 @@ class EsettResponse:
         self.__local_data_path =  config_obj.config['data_dir']
         self.__MBA_code=['SE1', 'SE2', 'SE3', 'SE4','FI']
 
-    def get_mba_info(self, MBA):
+    def __get_mba_info(self, MBA):
         self.response = requests.get(self.url)    #check the mba code in the string of api request
         #print(response.status_code) # 200: Everything went okay, and the result has been returned (if any).
         self.mba_codelist=self.response.json()
@@ -29,7 +29,7 @@ class EsettResponse:
     
     def eSett_request(self, area, country_code):
         assert area in self.__MBA_code, "unsupported area code"
-        mba_code= self.get_mba_info(area)
+        mba_code= self.__get_mba_info(area)
         if mba_code:
             # Build the API URL dynamically
             file_path= Path(__file__).parent / self.__local_data_path / country_code/ f"{country_code}_reservoir generation.csv"

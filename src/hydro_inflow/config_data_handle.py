@@ -14,12 +14,26 @@ class ConfigData:
         self.hydro_type = ''
         self.algorithm = ''
         self.__load_config()
+        self.__config_check()
+ 
+        #FIXME: add config validation
+
 
     def __load_config(self):
         with open(self.__PATH_USER_CONFIG, 'r') as file:
             self.config = toml.load(file)
         with open(self.__PATH_COUNTRY_MAP, 'r') as file:
             self.map = toml.load(file)
+
+    def __config_check(self):
+        for key, value in self.config.items():
+            if isinstance(value, str) and value == "":
+                print(f"ERROR: Toml Configuration '{key}' value is empty")
+                sys.exit(1)
+
+            if isinstance(value, list) and len(value) == 0:
+                print(f"ERROR: Toml Configuration '{key}' value is empty")
+                sys.exit(1)
 
     def args_check(self, args):
         # breakpoint()
@@ -52,11 +66,10 @@ class ConfigData:
 
         self.country_code = country_code
         self.hydro_type = hydro_type
-        self.algorithm = self.config['algorithm']
+        
 
 
         
-
 
 class FetchPath:
 
@@ -69,19 +82,11 @@ class FetchPath:
 
     def __set_file_path(self, config_obj):
         country_code = config_obj.country_code
-        pred_years = config_obj.config['pred_years']
         geo_dir = Path(config_obj.config['geo_dir'])
         scenario = config_obj.config['scenario']
 
-        if scenario == None:
-            import hashlib
-            def years_tag(pred_years):
-                yrs = sorted(set(int(y) for y in pred_years))
-                s = ",".join(map(str, yrs))
-                hid = hashlib.sha1(s.encode("utf-8")).hexdigest()[:8]  
-                return f"yrs{yrs[0]}-{yrs[-1]}_n{len(yrs)}_id{hid}"
-
-            scenario = years_tag(pred_years)
+        # if scenario == None:
+        #     scenario = "Unnamed"
 
 
         if config_obj.hydro_type == 'hdam':
