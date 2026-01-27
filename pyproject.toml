@@ -26,7 +26,7 @@ dependencies = [
             "zarr==2.18.3"
 ]
 
-requires-python = "==3.12.4"
+requires-python = ">=3.12.4"
 
 authors = [
   {name = "Yi Liu", email = "yil2@kth.se"},
