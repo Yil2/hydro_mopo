@@ -1,0 +1,82 @@
+#--------------------------------------- Area Code Abbreviation -----------------------------------
+#--------------------------------------------------------------------------------------------------
+# "AT":    "Austria"          "ITCN":  "Italy (Central-North)"      "SI":    "Slovenia"           
+# "BE":    "Belgium"          "ITCS":  "Italy (Central-South)"      "SK":    "Slovakia"           
+# "BG":    "Bulgaria"         "ITSA":  "Italy (Sardinia)"           "SE1":   "Sweden (1)"         
+# "CH":    "Switzerland"      "ITN1":  "Italy (North)"              "SE2":   "Sweden (2)"         
+# "CZ":    "Czech Republic"   "ITSU":  "Italy (South)"              "SE3":   "Sweden (3)"         
+# "DE-LU": "Germany (LU)"     "ITSI":  "Italy (Sicily)"             "SE4":   "Sweden (4)"         
+# "ES":    "Spain"            "NO1":   "Norway (1)"                 "UK":    "United Kingdom" 
+# "FI":    "Finland"          "NO2":   "Norway (2)"           
+# "FR":    "France"           "NO3":   "Norway (3)"              
+# "HR":    "Croatia"          "NO4":   "Norway (4)"             
+# "GR":    "Greece"           "NO5":   "Norway (5)"           
+# "IE":    "Ireland"          "PT":    "Portugal"               
+# "LV":    "Latvia"           "PL":    "Poland"                  
+# "LT":    "Lithuania"        "RO":    "Romania"                  
+#--------------------------------------------------------------------------------------------------
+
+
+#--------------------------------- Supported Hydropower Type Abbreviation -------------------------
+#--------------------------------------------------------------------------------------------------
+#"hdam": Reservoir-based Hydropower             "hror": Run-of-river Hydropower 
+#--------------------------------------------------------------------------------------------------
+
+
+#------------------------------Avaliable Area Code for HDAM Type ----------------------------------
+#--------------------------------------------------------------------------------------------------
+# "AT", "BG", "CH", "ES", "FR", "HR", "GR", "ITCN", "ITSA", "ITN1", "ITSU", "NO1", "NO2", "NO3", 
+# "NO4", "NO5", "PT", "RO", "SE1", "SE2", "SE3", "SE4"
+#--------------------------------------------------------------------------------------------------
+#
+#------------------------------Avaliable Area Code for HROR Type ----------------------------------
+#--------------------------------------------------------------------------------------------------
+# "AT",  "BG", "CH", "DE-LU", "ES", "FI", "FR","LV","ITCN", "ITN1", "PT", "RO", "RS", "SI"
+#--------------------------------------------------------------------------------------------------
+#TODO: FI needs extra modelling, #TODO: check ITCN HROR
+
+
+#---------------------------------------Configuration Input ----------------------------------------
+#--------------------------------------------------------------------------------------------------
+
+#---- Input your modelled hydropower type from supported hydropower type
+hydro_type = ""
+
+#---- Input your modelled area code from above available area lists: hdam / hror
+country_code  = ""
+
+#---- Input your modelled years, three formats are supported:
+#-----------[your targeted years], eg.[2001,2002]
+#-----------"all": means all years' data from 1980-2024 
+#-----------"None": means only retrieve historical weather data and hydropower data: recent 10 years
+
+pred_years = []
+
+#---- Give your modelled years a scenario name:
+scenario = ""
+
+#----Input your modelling methods:
+#----------Supported methods: "random forest", "linear regression", "hybrid"
+algorithm  = ""
+#--------------------------------------------------------------------------------------------------
+
+#------------------------------ Hydro and Geographic Data in Local Path ---------------------------
+#--------------------------------------------------------------------------------------------------
+
+#----Input your path for the downloaded onshore geographic file
+geo_dir=''
+#----Input your path for saving the historical data
+data_dir=''
+#----Input your path for saving the modelled data
+solution_dir=''
+#----Input your path for saving the raw weather data
+glofas_cdf_path= ''
+
+
+#-------------------------------------- API Access Token ------------------------------------------
+#--------------------------------------------------------------------------------------------------
+
+#----Input your Entsoe token
+entsoe_api_token=''
+
+

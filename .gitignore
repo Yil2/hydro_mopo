@@ -174,7 +174,7 @@ cython_debug/
 .pypirc
 
 #user token config
-src/config_data/user_config.toml
+#src/config_data/user_config.toml
 
 
 #local jupyter notebooks
