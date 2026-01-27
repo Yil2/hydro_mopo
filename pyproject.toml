@@ -9,7 +9,6 @@ version = "2026.1.0"
 dependencies = [
             "toml == 0.10.2", 
             "cdsapi==0.7.5",
-            "geoglows==1.7.0",
             "geopandas==1.0.1",
             "matplotlib==3.7.1",
             "numpy==1.26.4",
