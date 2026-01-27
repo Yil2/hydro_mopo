@@ -271,7 +271,6 @@ class DatabaseGlofasAPI:
             data = self.read_cdf(f"{self.path_dict['glofas_cdf_path']}/*.nc", "valid_time", years = extracted_years, determine_local_points=False)
             print("Glofas data read completed.")
             da = self.extract_values(data, self.var, plant_loc)
-
             da = da.chunk({"valid_time": -1})   
             da = da.compute()                  # one compute
             data_local = self.reshape_values(da)

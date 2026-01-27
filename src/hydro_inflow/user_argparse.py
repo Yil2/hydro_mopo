@@ -16,10 +16,6 @@ class UserArgparser:
         parser = argparse.ArgumentParser(description=self.description)
         parser.add_argument('-c', '--config', action='store_true', help='Open configuration toml file by user default editor')
         parser.add_argument('-r', '--run', action='store_true', help='Run the tool with toml configuration')
-        #parser.add_argument('-i', '--input', type=str, metavar ='', help='Select bidding country code to run, supperssing the code in the configuration file')
-        #parser.add_argument('-t', '--type', choices=['hdam', 'hror'], metavar ='', help='Select hydro type to run, supperssing the type in the configuration file')
-        #TODO: add years,  scenario, and if historcial only
-        #parser.add_argument('--equivalent_model', default=False, action='store_true', help='Generate an addtional equivalent model with selected country')
         self.args = parser.parse_args()
     
     def __arg_handle(self, args):

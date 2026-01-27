@@ -19,7 +19,7 @@ class EsettResponse:
 
     def __get_mba_info(self, MBA):
         self.response = requests.get(self.url)    #check the mba code in the string of api request
-        #print(response.status_code) # 200: Everything went okay, and the result has been returned (if any).
+        #print(response.status_code)
         self.mba_codelist=self.response.json()
         
         for country in self.mba_codelist:

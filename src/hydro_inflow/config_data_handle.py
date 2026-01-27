@@ -33,10 +33,9 @@ class ConfigData:
                 print(f"ERROR: Toml Configuration '{key}' value is empty")
                 sys.exit(1)
 
-    def args_check(self, args):
+    def args_check(self, index=0):
         # breakpoint()
-
-        country_code = self.config['country_code']
+        country_code = self.config['country_code_list'][index]
         print(f'Selected Counrty is [{country_code}]')
 
         # Check country code

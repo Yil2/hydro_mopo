@@ -39,18 +39,17 @@
 #---------------------------------------Configuration Input ----------------------------------------
 #--------------------------------------------------------------------------------------------------
 
-#---- Input your modelled hydropower type from supported hydropower type
+#---- Input your modelled hydropower type from supported hydropower type: hdam / hror
 hydro_type = ""
 
-#---- Input your modelled area code from above available area lists: hdam / hror
-country_code  = ""
+#---- Input the list of area codes to be run.
+country_code_list  = []
 
 #---- Input your modelled years, three formats are supported:
-#-----------[your targeted years], eg.[2001,2002]
+pred_years = []
+#-----------[1990,2013]: your targeted years
 #-----------"all": means all years' data from 1980-2024 
 #-----------"None": means only retrieve historical weather data and hydropower data: recent 10 years
-
-pred_years = []
 
 #---- Give your modelled years a scenario name:
 scenario = ""
