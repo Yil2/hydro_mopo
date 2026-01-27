@@ -1,4 +1,4 @@
-# this is the code for train and test by linear regression (Europe) OR scaling method (globally)
+# this is the code for train and test model without tuning
 
 import pandas as pd
 import numpy as np
@@ -21,7 +21,7 @@ class ModelTrain:
         self.country_code = config_obj.country_code
         self.hydro_type = config_obj.hydro_type
         self.training_model = self.config['algorithm']
-        #TODO: write pred_years by config_data_handel
+        #TODO: move pred_years to config_data_handel
         if self.config['pred_years'] == 'None':
             self.pred_years = list(range(2015, 2025))  # default prediction years
         elif self.config['pred_years'] == 'all':
@@ -334,7 +334,6 @@ class ModelTrain:
     def modelled_data_main(self):
 
         if self.hydro_type == 'hror':
-            #TODO: physical cap of maximum daily generation
             freq = 'D'
         else:
             freq = 'W-SUN'

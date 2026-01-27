@@ -9,13 +9,7 @@ import matplotlib.pyplot as plt
 
 
 class DatabaseGlofasAPI:
-    #DATASET = "glofas river discharge: daily resolution"
-    #TODO: change to flexible year and region from config
-    # REQUEST_YEAR=["1991","1992","1993","1994","1995","1996","1997","1998","1999","2000",
-    #             "2001","2002","2003","2004","2005","2006","2007","2008","2009","2010",
-    #             "2011","2012","2013","2014","2015","2016","2017","2018","2019","2020",
-    #             "2021", "2022", "2023","2024"]
-    
+    # DATASET = "glofas river discharge: daily resolution"
     REQUEST_MONTH=["01","02","03","04","05","06","07","08","09","10","11","12"]
 
     def __init__(self, config_obj, path_obj):
@@ -36,7 +30,7 @@ class DatabaseGlofasAPI:
             self.pred_years = list(range(1980, 2025))
         else:
             self.pred_years = self.config['pred_years']   
-        #FIXME: move to config data validation
+
 
 
     def read_cdf(self, files, dim, years, determine_local_points = True):
@@ -57,7 +51,7 @@ class DatabaseGlofasAPI:
             concat_dim=dim,
             parallel=False,
             engine="netcdf4",
-            chunks={dim: 200},        # TODO: tune chunk size
+            chunks={dim: 200},        # TODO: 
             data_vars="minimal",
             coords="minimal",
             compat="override",
