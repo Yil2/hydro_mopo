@@ -5,7 +5,6 @@ import sys
 class ConfigData:
 
     def __init__(self):
-        #FIX:add read only property
         self.__PATH_USER_CONFIG = Path(__file__).parent.parent / 'config_data' / 'user_config.toml'
         self.__PATH_COUNTRY_MAP = Path(__file__).parent.parent / 'config_data' / 'country_map.toml'
         self.config = {}
@@ -15,8 +14,7 @@ class ConfigData:
         self.algorithm = ''
         self.__load_config()
         self.__config_check()
- 
-        #FIXME: add config validation
+
 
 
     def __load_config(self):
@@ -37,10 +35,8 @@ class ConfigData:
 
     def args_check(self, args):
         # breakpoint()
-        if args.input:
-            country_code = args.input
-        else:
-            country_code = self.config['country_code']
+
+        country_code = self.config['country_code']
         print(f'Selected Counrty is [{country_code}]')
 
         # Check country code
@@ -48,10 +44,7 @@ class ConfigData:
             print(f'Input country code: {country_code} is not available!')
             sys.exit(1)
 
-        if args.type:
-            hydro_type = args.type
-        else:
-            hydro_type = self.config['hydro_type']
+        hydro_type = self.config['hydro_type']
 
         #Check for hydro_type and country_code matching
         if hydro_type == 'hdam' and self.map[country_code]['hdam_type_support']:
