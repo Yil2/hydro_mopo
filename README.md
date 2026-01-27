@@ -10,9 +10,44 @@ Please contact  ENTSO-E Transparency Platform team to get the API key.
 + :ocean: [Global Flood Awareness System](https://ewds.climate.copernicus.eu/datasets/cems-glofas-historical?tab=overview)  
 Please follow the [CDSAPI setup](https://confluence.ecmwf.int/display/CKB/How+to+install+and+use+CDS+API+on+Windows) to setup the CDS Api key.
 
-### Installation
+### Requirement
+1. Python version **"==3.12.4"**
+The tool currently only works under Python 3.12.4.
+2. Git
+3. Extra requirement of [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) for figure plotting. Go to the website and download by cliking **Donwload Build Tools**; Install the **Desktop development with C++**.
 
+### Installation (Git Bash)
+1. Open Git Bash and clone the repo to your local directory
+```
+git clone https://github.com/Yil2/hydro_mopo.git
+```
+2. Change your working directory to **the root** of this repo
+3. Create a virtual Python environment
+```
+python -m venv .venv
+```
+4. Activate venv
+```
+source .venv/Scripts/activate
+```
+5. Install the module
+```
+pip install -e .
+```
 
+### Run the tool
+1. To start, check the help menu
+```
+python -m hydro_inflow --help
+```
+2. Config model settings and set the model input according to **User Configuration**
+```
+python -m hydro_inflow --config
+```
+3. Run the model after setting up the inputs
+```
+python -m hydro_inflow --run
+```
 
 ### User Configuration
 
@@ -43,4 +78,4 @@ This work is built based on below open data.
 
 
 ## Cite Me :paperclip:
- 
+To Be Added

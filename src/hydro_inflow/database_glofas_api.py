@@ -29,7 +29,9 @@ class DatabaseGlofasAPI:
         elif self.config['pred_years'] == 'all':
             self.pred_years = list(range(1980, 2025))
         else:
-            self.pred_years = self.config['pred_years']   
+            years = self.config['pred_years'] + list(range(2015, 2025))
+            self.pred_years = sorted(set(years))
+
 
 
 
