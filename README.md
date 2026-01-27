@@ -19,15 +19,17 @@ Historical river discharge data (1980-2024) are retrieved from GloFAS dataset
 
 + Input area code, hydropower type, years, scenario and method, eg:
     + hydro_type = "hdam"
-    + country_code = "SE1"  :point_right: If you want to run single area: 
-    + country_code_list  = ["SE1", "SE2"]  :point_right: If you want to run multiple areas
+    + country_code = "SE1"  
+    \:point_right: If you want to run single area: 
+    + country_code_list  = ["SE1", "SE2"]  
+    \:point_right: If you want to run multiple areas
     + pred_years = [2000,2005,2008]
-    + scenario = "example" 
-    The scenario name is used for naming the model output
-    + algorithm  = "random forest" 
-    The modelling method used for generating required energy data by weather data. 
+    + scenario = "example"  
+    \:point_right: The scenario name is used for naming the model output
+    + algorithm  = "random forest"  
+    \:point_right: The modelling method used for generating required energy data by weather data. 
 
-+ Input paths for saving raw weather data, processed historical data and model output, eg:
++ Input paths for saving raw weather data, processed historical data and model output :file_folder:
     + geo_dir = 'Your path for the downloaded onshore.geojson'
     + data_dir= 'Your path saving the historical data'
     + solution_dir = 'Your path saving the modelled results'
@@ -36,5 +38,5 @@ Historical river discharge data (1980-2024) are retrieved from GloFAS dataset
 + Input API token
     + entsoe_api_token='Your entsoe api token'
 
-## Citation
+## Citation :paperclip:
 
