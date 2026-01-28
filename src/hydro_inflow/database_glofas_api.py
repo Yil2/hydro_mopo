@@ -38,12 +38,12 @@ class DatabaseGlofasAPI:
     def read_cdf(self, files, dim, years, determine_local_points = True):
         paths_all = sorted(glob(files))
         if determine_local_points:
-            paths =[p for p in paths_all if int(str(p).split("_")[0].split('\\')[-1]) == 2024 ]  
+            paths =[p for p in paths_all if int(os.path.basename(p).split("_", 1)[0]) == 2024 ]  
             #determine accuracte local points by 2024 data
 
         else:
-            paths =[p for p in paths_all if int(str(p).split("_")[0].split('\\')[-1]) in years
-                    or int(str(p).split("_")[0].split('\\')[-1])>=2015] # default prediction years should be extracted for training
+            paths =[p for p in paths_all if int(os.path.basename(p).split("_", 1)[0]) in years
+                    or int(os.path.basename(p).split("_", 1)[0])>=2015] # default prediction years should be extracted for training
 
         #only read necessary years to save memory
 
