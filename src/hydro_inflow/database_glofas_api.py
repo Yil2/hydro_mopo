@@ -253,29 +253,33 @@ class DatabaseGlofasAPI:
     def save_disc_main(self):
 
         # Check if data already processed before
-        existing_disc, extracted_years = self.__check_existing_disc()
+        if not self.path_dict['disc_file'].exists():
+            existing_disc, extracted_years = self.__check_existing_disc()
 
-        if not extracted_years:
-            print(f"File {self.path_dict['disc_file']} exists. Skipping...")
+            if not extracted_years:
+                existing_disc.to_csv(self.path_dict['disc_file'], index=True)
+                
+            else:
+                print(f"Retrieving {self.country_code} Glofas River discharge data for years: {extracted_years}")
+                # if need to request cdf by api to local
+                self.__check_existing_nc_file()
+                #if need to process the location
+                plant_loc = self.__check_existing_loc_file()
+
+                data = self.read_cdf(f"{self.path_dict['glofas_cdf_path']}/*.nc", "valid_time", years = extracted_years, determine_local_points=False)
+                print("Glofas data read completed.")
+                da = self.extract_values(data, self.var, plant_loc)
+                da = da.chunk({"valid_time": -1})   
+                da = da.compute()                  # one compute
+                data_local = self.reshape_values(da)
+
+                if existing_disc is not None:
+                    data_local = pd.concat([existing_disc, data_local], axis=0).sort_index()
+                else :
+                    pass
+
+                data_local.to_csv(self.path_dict['disc_file'], index=True)
+                print(f"{self.country_code} Glofas River discharge data: Done")
+
         else:
-            print(f"Retrieving {self.country_code} Glofas River discharge data for years: {extracted_years}")
-            # if need to request cdf by api to local
-            self.__check_existing_nc_file()
-            #if need to process the location
-            plant_loc = self.__check_existing_loc_file()
-
-            data = self.read_cdf(f"{self.path_dict['glofas_cdf_path']}/*.nc", "valid_time", years = extracted_years, determine_local_points=False)
-            print("Glofas data read completed.")
-            da = self.extract_values(data, self.var, plant_loc)
-            da = da.chunk({"valid_time": -1})   
-            da = da.compute()                  # one compute
-            data_local = self.reshape_values(da)
-
-            if existing_disc is not None:
-                data_local = pd.concat([existing_disc, data_local], axis=0).sort_index()
-            else :
-                pass
-
-            data_local.to_csv(self.path_dict['disc_file'], index=True)
-            print(f"{self.country_code} Glofas River discharge data: Done")
-
+            print(f"{self.country_code} Glofas River discharge data already exists. Skipping...")
