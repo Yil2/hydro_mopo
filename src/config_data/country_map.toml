@@ -41,7 +41,7 @@ entose_generation = "20170306"
 start_date = ""
 end_date = ""
 hdam_type_support = false
-hror_type_support = false
+hror_type_support = true
 
 [BG]
 COUNTRY = "Bulgaria"
@@ -160,7 +160,7 @@ entose_ror = "20181001"
 entose_generation = "20181001"
 start_date = ""
 end_date = ""
-hdam_type_support = false
+hdam_type_support = true
 hror_type_support = true
 
 [GR]
@@ -226,7 +226,7 @@ hror_type_support = true
 [ITCS]
 COUNTRY = ""
 iso_code = "IT"
-Entsoe = ""
+Entsoe = "IT_CSUD"
 eSett = ""
 PECD2 = [ "ITCS",]
 entose_reservoir_rate = "20150112"
@@ -296,7 +296,7 @@ entose_generation = "20150105"
 start_date = ""
 end_date = ""
 hdam_type_support = true
-hror_type_support = false
+hror_type_support = true
 
 [LV]
 COUNTRY = "Latvia"
@@ -340,7 +340,7 @@ entose_ror = ""
 entose_generation = "20150105"
 start_date = ""
 end_date = ""
-hdam_type_support = false
+hdam_type_support = true
 hror_type_support = false
 
 [NL]
@@ -364,13 +364,13 @@ iso_code = "MK"
 Entsoe = "MK"
 eSett = ""
 PECD2 = [ "MK00",]
-entose_reservoir_rate = ""
+entose_reservoir_rate = "20230101"
 entose_pumped = ""
 entose_ror = ""
 entose_generation = "20160516"
 start_date = ""
 end_date = ""
-hdam_type_support = false
+hdam_type_support = true
 hror_type_support = false
 
 [NO1]
@@ -490,7 +490,7 @@ entose_ror = "20170102"
 entose_generation = "20170102"
 start_date = ""
 end_date = ""
-hdam_type_support = false
+hdam_type_support = true
 hror_type_support = true
 
 [SI]
@@ -599,14 +599,14 @@ hdam_type_support = true
 hror_type_support = true
 
 [PL]
-COUNTRY = ""
+COUNTRY = "Poland"
 iso_code = "PL"
-Entsoe = ""
+Entsoe = "PL"
 eSett = ""
 PECD2 = [ "PL01", "PL02", "PL03", "PL04", "PL05",]
 entose_reservoir_rate = ""
 entose_pumped = ""
-entose_ror = ""
+entose_ror = "20150102"
 entose_generation = ""
 start_date = ""
 end_date = ""
@@ -631,14 +631,48 @@ hror_type_support = true
 [UK]
 COUNTRY = "United Kingdom"
 iso_code = "GB"
-Entsoe = ""
+Entsoe = "GB"
 eSett = ""
 PECD2 = [ "UK01", "UK02", "UK03", "UK04", "UK05", "UKNI",]
+entose_reservoir_rate = ""
+entose_pumped = "20150701"
+entose_ror = "20150201"
+entose_generation = ""
+start_date = ""
+end_date = ""
+hdam_type_support = false
+hror_type_support = true
+
+[UA]
+COUNTRY = "Ukraine"
+iso_code = "UA"
+Entsoe = ""
+eSett = ""
+PECD2 = [ "UA01", "UA02"]
 entose_reservoir_rate = ""
 entose_pumped = ""
 entose_ror = ""
 entose_generation = ""
 start_date = ""
 end_date = ""
-hdam_type_support = false
-hror_type_support = true
+hdam_type_support = true
+hror_type_support = false
+
+
+[AL]
+COUNTRY = "Albania "
+iso_code = "AL"
+Entsoe = ""
+eSett = ""
+PECD2 = [ "AL00"]
+entose_reservoir_rate = "20250101"
+entose_pumped = ""
+entose_ror = ""
+entose_generation = ""
+start_date = ""
+end_date = ""
+hdam_type_support = true
+hror_type_support = false
+
+
+

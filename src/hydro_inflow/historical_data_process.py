@@ -12,10 +12,13 @@ class FetchInflow():
     """Fetch Inflow for hdam and hror types"""
     def __init__(self, config_obj, path_obj, args):
         self.esett_country_list = ['SE1', 'SE2', 'SE3', 'SE4', 'FI']
-        self.combined_inflow_codes = ['NO1', 'NO2', 'NO3', 'NO4', 'NO5']
+        self.combined_inflow_codes = ['NO1', 'NO2', 'NO3', 'NO4', 'NO5', 'ITSI', 'ITSU', 'ITSA']
+        self.pump_country_list = ['AT', 'CH', 'ES', 'FR', 'ITN1', 'ITSI', 'ITSU', 'ITSA', 'ITCN', 'ITCS', 'PT']
+
         self.esett_obj = EsettResponse(config_obj)
         self.entsoe_obj = EntsoeDataProcess(config_obj, api_key=config_obj.config['entsoe_api_token'] )
         self.__api_run(path_obj, config_obj, config_obj.hydro_type)
+        
 
     # Entry point of the api launch
     def __api_run(self, path_obj, config_obj, type):
@@ -115,17 +118,17 @@ class FetchInflow():
             print('Local historical inflow data already exists. Skipping data fetching')
         else:
             print('Local historical inflow data does not exist. Fetching data from API...')
-            reservoir_generation, reservoir_rate = self.__api_request(config_obj, code)
-            reservoir_generation, reservoir_rate = self.__process_reservior_data(reservoir_generation, reservoir_rate, code)
-            reservoir_generation, reservoir_rate = self.__check_reservior_data(reservoir_generation, reservoir_rate)
+        reservoir_generation, reservoir_rate = self.__api_request(config_obj, code)
+        reservoir_generation, reservoir_rate = self.__process_reservior_data(reservoir_generation, reservoir_rate, code)
+        reservoir_generation, reservoir_rate = self.__check_reservior_data(reservoir_generation, reservoir_rate)
+        
+        if code in self.combined_inflow_codes:
+            ror = self.__hror_api_run(path_obj, config_obj)
+            reservoir_generation, ror , _ , _ = rpi.time_align(reservoir_generation, ror)
+            reservoir_generation = reservoir_generation['Reservoir generation'] + ror['Run of River Generation']
+            print('Combining reservoir generation and ror data...')
             
-            if code in self.combined_inflow_codes:
-                ror = self.__hror_api_run(path_obj, config_obj)
-                reservoir_generation, ror , _ , _ = rpi.time_align(reservoir_generation, ror)
-                reservoir_generation = reservoir_generation['Reservoir generation'] + ror['Run of River Generation']
-                print('Combined reservoir generation and ror data...')
-                
-            self.__inflow_calc_save(path_obj, reservoir_generation, reservoir_rate, code)
+        self.__inflow_calc_save(path_obj, reservoir_generation, reservoir_rate, code)
         
 
     def __api_request(self, config_obj, code):
@@ -195,8 +198,8 @@ class FetchInflow():
     def __check_reservior_data(self, reservoir_generation, reservoir_rate):
         # Check reservoir rate (some countries do not use midnight time)
         reservoir_rate.index = reservoir_rate.index.normalize()
-        start_time = reservoir_rate.index[0]
-        end_time = reservoir_rate.index[-1]
+        start_time = max(reservoir_generation.index.min(), reservoir_rate.index.min())
+        end_time = min(reservoir_generation.index.max(), reservoir_rate.index.max())
         date_range = cfd.create_date_range(start_time, end_time, 'W-SUN')
         
         reservoir_rate = cfd.check_duplicate_data(reservoir_rate)
@@ -216,14 +219,49 @@ class FetchInflow():
         """Calculate inflow and save results"""
         # Resample to weekly
         reservoir_generation = reservoir_generation.resample('h').mean()
-        reservoir_generation = reservoir_generation.resample('w-sun').sum()
-        reservoir_rate = rpi.resample_data(reservoir_rate, 'Reservoir rate', 'W-SUN')
-        
-        # Align time series and calculate inflow
-        reservoir_generation, reservoir_rate, inflow_start, inflow_end = rpi.time_align(reservoir_generation, reservoir_rate)
-        inflow_weekly = rpi.inflow_calculation(reservoir_generation, reservoir_rate)
-        inflow_weekly = cfd.check_negative_data(inflow_weekly)
+        reservoir_generation = reservoir_generation.resample('w-sun').sum().shift(freq="24h").iloc[1:-1] # start from Monday 00:00
+        # in case the first and last weeks are not entire weeks, remove first and last weeks directly
 
+        reservoir_rate = rpi.resample_data(reservoir_rate, 'Reservoir rate', 'W-MON')
+
+
+        if code in self.pump_country_list:
+            import os
+            pump = pd.read_csv(os.path.join(path_obj.path_dict['history_data_path'], code+"_pump.csv"),  index_col=0, parse_dates=True)
+            pump.index = pd.to_datetime(pump.index, utc=True)
+            pump = pump.iloc[1:]
+            if code in ['BG', 'GR', 'CH']:
+                generation_pump = pd.to_numeric(pump.iloc[:, 0], errors='coerce').fillna(0)
+
+            elif code in ['ES']:  #ES changing the name of generation
+                generation_pump = pd.to_numeric(pump.iloc[:, 0], errors='coerce').fillna(0)-pd.to_numeric(pump.iloc[:, 2], errors='coerce').fillna(0)*0.75-pd.to_numeric(pump.iloc[:, 1], errors='coerce').fillna(0)*0.75
+            else:
+                generation_pump = pd.to_numeric(pump.iloc[:, 0], errors='coerce').fillna(0)-pd.to_numeric(pump.iloc[:, 1], errors='coerce').fillna(0)*0.75
+                generation_pump.index = pd.to_datetime(generation_pump.index, utc=True)
+                generation_pump = pd.DataFrame(generation_pump)
+            
+            generation_pump = generation_pump.resample('h').mean()
+            generation_pump = generation_pump.resample('w-sun').sum().shift(freq="24h").iloc[1:-1] # start from Monday 00:00
+            generation_pump, reservoir_rate, inflow_start, inflow_end = rpi.time_align(reservoir_generation, reservoir_rate)
+            reservoir_generation, reservoir_rate, inflow_start, inflow_end = rpi.time_align(reservoir_generation, reservoir_rate)
+
+            content_diff = reservoir_rate.diff().dropna()
+        
+            generation_align = reservoir_generation.drop(reservoir_generation.index[0])
+            generation_align_pump = generation_pump.drop(generation_pump.index[0])
+
+            inf_original = content_diff.add(generation_align.iloc[:, 0], axis=0)   
+            inf_original = inf_original.add(generation_align_pump.iloc[:, 0], axis=0)      
+            inf_original[inf_original<0]=None
+            inflow_weekly = inf_original.interpolate(method='linear')
+
+        else:
+
+        # Align time series and calculate inflow
+            reservoir_generation, reservoir_rate, inflow_start, inflow_end = rpi.time_align(reservoir_generation, reservoir_rate)
+            inflow_weekly = rpi.inflow_calculation(reservoir_generation, reservoir_rate)
+        
+        inflow_weekly = cfd.check_negative_data(inflow_weekly)
         # Save historical inflow data
         history_data_path = path_obj.path_dict['history_data_path']
         inflow_path = history_data_path / f'{code}_historical_hdam_inflow.csv'
@@ -233,3 +271,50 @@ class FetchInflow():
         # Plot and save historical inflow figure
         fig_path = history_data_path / f'{code}_{inflow_start}_{inflow_end}_inflow.pdf'
         rpi.save_inflow_fig(inflow_weekly, str(fig_path), code)
+
+
+    def price_request(self, config_obj, code):
+        start_date = '20150101'
+        end_date = '20260101'
+        
+        try:    
+            print(f"Retrieve entsoe data: {code}_price--->Start")
+            self.entsoe_obj.request_price(config_obj.map[code]['Entsoe'], start_date, end_date, code)
+            
+        except Exception as e:
+            print(f'Fetching {code} Price from ENTSOE API failed: {e}')
+            sys.exit(1)
+        else:
+            print('The area is not modelled in HROR type')
+
+
+    # ------------------------- HPUMP ----------------------------
+    def pump_api_run(self, config_obj):
+
+        code = config_obj.country_code
+        print('Fetching pumping from API...')
+        self.__pump_api_request(config_obj, code)
+        
+            
+    def __pump_api_request(self, config_obj, code):
+        pump_start_time = config_obj.map[code]['entose_pumped']
+        pump = dates = None
+
+        if pd.notna(pump_start_time):
+            start_date = pump_start_time
+            end_date = '20250101'
+            dates = (start_date, end_date)
+            try:
+                pump = self.entsoe_obj.entsoe_request("Pumped Storage", config_obj.map[code]['Entsoe'], 
+                                                    start_date, end_date, code)
+
+                
+            except Exception as e:
+                print(f'Fetching {code} PUMP generation from ENTSOE API failed: {e}')
+                sys.exit(1)
+        else:
+            print('Warning: There is no PUMP in this country!')
+        return pump, dates
+
+
+        

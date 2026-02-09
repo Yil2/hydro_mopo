@@ -60,11 +60,12 @@ python -m hydro_inflow --run
     + algorithm  = "random forest"    
     \:point_right:The modelling method used for generating required energy data by weather data. 
 
-+ Input paths for saving raw weather data, processed historical data and model output :file_folder:
++ Input paths for saving raw weather data, processed historical data and model output 
     + geo_dir = 'Your path for the downloaded onshore.geojson'
     + data_dir= 'Your path saving the historical data'
     + solution_dir = 'Your path saving the modelled results'
-    + glofas_cdf_path= 'Your path saving the raw weather data'
+    + glofas_cdf_path= 'Your path saving the raw weather data'  
+    \ :file_folder: The folder for saving the raw weather data should be a new directory without other NC files.
 
 + Input API token
     + entsoe_api_token='Your entsoe api token'

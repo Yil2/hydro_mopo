@@ -128,7 +128,7 @@ class DatabaseGlofasAPI:
         vals.index= np.arange(5)
         #vals_reshaped = vals.reshape_values('dis24', pd.date_range(data['valid_time'].values[0], data['valid_time'].values[-1], freq='d').shift(-1), points)
         max_point = points[vals.mean(axis=1).idxmax()]
-        print("max point", vals.mean(axis=1).idxmax()+1, max_point  )
+        print("max point", vals.mean(axis=1).idxmax()+1, max_point)
        # lat_final, lon_final = max_point
     
         return max_point
@@ -150,6 +150,8 @@ class DatabaseGlofasAPI:
         # da dims: (valid_time, site)
         df = da.to_pandas()  # index=valid_time, columns=site
         df.columns = [f"plant_{i}" for i in range(df.shape[1])]
+        df.index = pd.to_datetime(df.index - pd.Timedelta(days=1), format="%Y%m%d%H")
+        # the glofas data is shown as 00:00:00 as the next day's data, so we shift it back to the previous day
         return df
         
 
@@ -169,14 +171,17 @@ class DatabaseGlofasAPI:
         plants_in_zone = self.sjoin_gdf(plants, zone).reset_index(drop=True)
         #TODO: check the installed capacity in OSM data
         #plants_large =...
-
-        fig, ax = plt.subplots(figsize=(8, 8))
-        zone.boundary.plot(ax=ax, color='black')
-        plants_in_zone.plot(ax=ax, color='lightgrey', markersize=10)
-        #osm_data.plot(ax=ax, color='lightgrey', markersize=5)
-        ax.set_title(f'Hydropower plants in {self.country_code} ({self.hydro_type})')
-        plt.savefig(self.path_dict['history_data_path'] / f'{self.country_code}_{self.hydro_type}_plants_location.png')
-        plt.close()
+        if plants_in_zone.shape[0] == 0:
+            raise ValueError(f"No {self.hydro_type} plants in {self.country_code}")
+            
+        else:
+            fig, ax = plt.subplots(figsize=(8, 8))
+            zone.boundary.plot(ax=ax, color='black')
+            plants_in_zone.plot(ax=ax, color='lightgrey', markersize=10)
+            #osm_data.plot(ax=ax, color='lightgrey', markersize=5)
+            ax.set_title(f'Hydropower plants in {self.country_code} ({self.hydro_type})')
+            plt.savefig(self.path_dict['history_data_path'] / f'{self.country_code}_{self.hydro_type}_plants_location.png')
+            plt.close()
 
         return plants_in_zone
     

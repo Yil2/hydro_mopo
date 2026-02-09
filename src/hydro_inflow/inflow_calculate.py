@@ -43,10 +43,10 @@ class ReadProcessInflow:
         #input_data.set_index(datetime_column, inplace=True)
         return pd.DataFrame(input_data)
         
-    def resample_data(input_data:pd.DataFrame, value_column:str, freq='W-SUN')->pd.DataFrame:
+    def resample_data(input_data:pd.DataFrame, value_column:str, freq='W-MON')->pd.DataFrame:
         
         """
-        Resamples the given data into a DataFrame with a given frequency.
+        Resamples the given reservoir rate into a DataFrame with a given frequency.
 
         Parameters
         ----------
@@ -64,9 +64,18 @@ class ReadProcessInflow:
             The resampled DataFrame with datetime index and value column.
         """
         input_data[value_column] = pd.to_numeric(input_data[value_column], errors='coerce')
-        input_data=input_data.resample(freq, label='right').sum()
         
-        return pd.DataFrame(input_data)
+        df = input_data.copy()
+        df.index = pd.to_datetime(df.index)
+
+        days_to_monday = (7 - df.index.weekday) % 7   # Monday=0 ... Sunday=6
+        df.index = df.index + pd.to_timedelta(days_to_monday, unit="D")
+        df = df.sort_index()
+        df = df.loc[~df.index.duplicated(keep='first')]
+        
+        df = df.asfreq(freq)
+        df = df.interpolate(method = 'linear') # fill missing values
+        return df
     
     def pre_process(sampledata,datatime_column, value_column):
         sampledata=sampledata.dropna(how='any')
@@ -132,24 +141,37 @@ class ReadProcessInflow:
         -------
         pd.DataFrame
             The calculated inflow data.
+            
         """
+        threshold=False #CH needs to be True
+        if threshold:
         
-        threshold=2
-        #Remove big fluctuation between weeks
-        diff=content.diff().diff()
-        z_scores=(diff-diff.mean())/diff.std()
-        diff_mask=diff.copy()
-        diff_mask[z_scores.abs()>threshold]=np.nan
+            threshold=2
+            #Remove big fluctuation between weeks
+            diff=content.diff().diff()
+            z_scores=(diff-diff.mean())/diff.std()
+            diff_mask=diff.copy()
+            diff_mask[z_scores.abs()>threshold]=np.nan
 
-        content_mask=content.copy()
-        content_mask[diff_mask.isna()]=np.nan
-        content_mask.interpolate(inplace=True)
+            content_mask=content.copy()
+            content_mask[diff_mask.isna()]=np.nan
+            content_mask.interpolate(inplace=True)
+
+            content_diff = content_mask.diff().dropna()
+        else:
+            content_diff = content.diff().dropna()
         
-        inf_orginal=pd.DataFrame(content_mask.diff().dropna(), index=content.index[1:]).values+pd.DataFrame(generation.iloc[:-1,0], index=content.index[1:]).values
-        inf_orginal=pd.DataFrame(inf_orginal, index=content.index[1:])
+        generation_align = generation.drop(generation.index[0])
+        
+        #inf_orginal=pd.DataFrame(content_mask.diff().dropna(), index=content.index[1:]).values+pd.DataFrame(generation.iloc[1:,0], index=content.index[1:]).values
+        #inf_orginal=pd.DataFrame(inf_orginal, index=content.index[1:])
+        #inf_orginal[inf_orginal<0]=0
 
-        inf_orginal[inf_orginal<0]=0
-        return pd.DataFrame(inf_orginal)
+        inf_original = content_diff.add(generation_align.iloc[:, 0], axis=0)      
+        inf_original[inf_original<0]=None
+        inf_original = inf_original.interpolate(method='linear')
+
+        return inf_original
     
     def filldata(data, area, file_path):
         data=data.mask(data<0)
