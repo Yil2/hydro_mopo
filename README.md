@@ -10,7 +10,7 @@ This is the tool for modelling the European hydropower related energy data: week
 | AT | BG | CH | ES | FR | GR | HR | ITN1 |
 | ME | MK | NO1 | NO2 | NO3 | NO4 | NO5 | PT |
 | RO | RS | SE1 | SE2 | SE3 | SE4 |  |  |
-|  |  |  |  |  |  |  |  |
+
 
 **Run-of-river Inflow**
 
@@ -19,7 +19,6 @@ This is the tool for modelling the European hydropower related energy data: week
 | AT | BA | BE | BG | CH | CZ | DE-LU | ES |
 | FI | FR | HR | IE | ITCN | ITCS | ITN1 | ITSU |
 | LT | LV | PL | PT | RO | RS | SI | UK |
-|  |  |  |  |  |  |  |  |
 
 
 
