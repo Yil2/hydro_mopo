@@ -1,5 +1,30 @@
 # Hydropower Inflow Model for European Countries
-This is the tool for modelling the European hydropower related energy data: weekly reservoir inflow and daily run-of-river generation in bidding zone level, by historical river discharge. The tool is used for the EU project [MOPO](https://www.tools-for-energy-system-modelling.org/). 
+This is the tool for modelling the European hydropower related energy data: weekly reservoir inflow (MWh) and daily run-of-river inflow (MWh) in bidding zone level, by historical river discharge. The tool is used for the EU project [MOPO](https://www.tools-for-energy-system-modelling.org/). 
+
+## Modelled Areas
+
+**Reservoir Inflow**
+
+|  |  |  |  |  |  |  |  |
+|---|---|---|---|---|---|---|---|
+| AT | BG | CH | ES | FR | GR | HR | ITN1 |
+| ME | MK | NO1 | NO2 | NO3 | NO4 | NO5 | PT |
+| RO | RS | SE1 | SE2 | SE3 | SE4 |  |  |
+|  |  |  |  |  |  |  |  |
+
+**Run-of-river Inflow**
+
+|  |  |  |  |  |  |  |  |
+|---|---|---|---|---|---|---|---|
+| AT | BA | BE | BG | CH | CZ | DE-LU | ES |
+| FI | FR | HR | IE | ITCN | ITCS | ITN1 | ITSU |
+| LT | LV | PL | PT | RO | RS | SI | UK |
+|  |  |  |  |  |  |  |  |
+
+
+
+
+
 ## How to use
 
 ### Required API Access :cloud:
@@ -73,7 +98,7 @@ python -m hydro_inflow --run
 ## Data Attribution
 
 This work is built based on below open data. 
-+ Hydropower historical data (2015/2019-2024) are from [ENTSO-E Transparency Platform](https://transparency.entsoe.eu/)  via the [entsoe-py library](https://github.com/EnergieID/entsoe-py), and [eSett Open Data](https://opendata.esett.com/). Water Reservoirs Stored Energy Value, Electricity price, Reservoir-based hydropower generation, Run-of-river hydropower generation are retrieved from Entso-e for the following areas: [AT, BG, CH, ES, DE-LU, FR, FI, LV, HR, GR, ITCN, ITSA, ITN1, ITSU, NO1, NO2, NO3, NO4, NO5, PT, RO, RS, SE1, SE2, SE3, SE4, SI]. Reservoir-based hydropower generation data for [SE1, SE2, SE3, SE4] are retrieved from eSett Open Data Platform.
++ Hydropower historical data (2015/2019-2024) are from [ENTSO-E Transparency Platform](https://transparency.entsoe.eu/)  via the [entsoe-py library](https://github.com/EnergieID/entsoe-py), and [eSett Open Data](https://opendata.esett.com/). Water Reservoirs Stored Energy Value, Electricity price, Reservoir-based hydropower generation, Run-of-river hydropower generation are retrieved from Entso-e for the following areas: [AT, BG, CH, ES, DE-LU, FR, FI, LV, HR, GR, ITCS, ITCN, ITSA, ITN1, ITSU, NO1, NO2, NO3, NO4, NO5, PT, RO, RS, SE1, SE2, SE3, SE4, SI, ME, MK, CZ, PL, BA, IE, BE, LT, UK]. Reservoir-based hydropower generation data for [SE1, SE2, SE3, SE4] are retrieved from eSett Open Data Platform.
 + Detailed hydropower location data are from [OpenStreetMap](https://www.openstreetmap.org)
 + Historical river discharge data (1980-2024) are from [Global Flood Awareness System](https://ewds.climate.copernicus.eu/datasets/cems-glofas-historical?tab=overview) 
 
