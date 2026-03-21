@@ -13,8 +13,9 @@ class FetchInflow():
     def __init__(self, config_obj, path_obj, args):
         self.esett_country_list = ['SE1', 'SE2', 'SE3', 'SE4', 'FI']
         self.combined_inflow_codes = ['NO1', 'NO2', 'NO3', 'NO4', 'NO5', 'ITSI', 'ITSU', 'ITSA']
-        self.pump_country_list = ['AT', 'CH', 'ES', 'FR', 'ITN1', 'ITSI', 'ITSU', 'ITSA', 'ITCN', 'ITCS', 'PT']
-
+        self.pump_country_list = []
+            #remove 'BG', 'GR', 'CH'
+            #remove 'AT', 'ES', 'FR', 'ITN1','PT'
         self.esett_obj = EsettResponse(config_obj)
         self.entsoe_obj = EntsoeDataProcess(config_obj, api_key=config_obj.config['entsoe_api_token'] )
         self.__api_run(path_obj, config_obj, config_obj.hydro_type)
@@ -112,7 +113,7 @@ class FetchInflow():
     def __hdam_api_run(self, path_obj, config_obj):
 
         code = config_obj.country_code
-        generated_data_file = path_obj.path_dict['history_data_path'] / (code + f'_historical_hdam_inflow.csv')
+        generated_data_file = path_obj.path_dict['data_file']
 
         if generated_data_file.exists():
             print('Local historical inflow data already exists. Skipping data fetching')
@@ -121,12 +122,11 @@ class FetchInflow():
         reservoir_generation, reservoir_rate = self.__api_request(config_obj, code)
         reservoir_generation, reservoir_rate = self.__process_reservior_data(reservoir_generation, reservoir_rate, code)
         reservoir_generation, reservoir_rate = self.__check_reservior_data(reservoir_generation, reservoir_rate)
-        
+        #NO needs to firstly process ROR modelled data and calibrate the RES generation by ROR generation
         if code in self.combined_inflow_codes:
-            ror = self.__hror_api_run(path_obj, config_obj)
-            reservoir_generation, ror , _ , _ = rpi.time_align(reservoir_generation, ror)
-            reservoir_generation = reservoir_generation['Reservoir generation'] + ror['Run of River Generation']
-            print('Combining reservoir generation and ror data...')
+            res_updated_gen_file = path_obj.path_dict['history_data_path'] / (code + f'_calib_reservoir generation.csv')
+            reservoir_generation = pd.read_csv(res_updated_gen_file, index_col=0, parse_dates=True)
+            print('Use calibrated reservoir generation data for inflow calculation')
             
         self.__inflow_calc_save(path_obj, reservoir_generation, reservoir_rate, code)
         
@@ -230,10 +230,10 @@ class FetchInflow():
             pump = pd.read_csv(os.path.join(path_obj.path_dict['history_data_path'], code+"_pump.csv"),  index_col=0, parse_dates=True)
             pump.index = pd.to_datetime(pump.index, utc=True)
             pump = pump.iloc[1:]
-            if code in ['BG', 'GR', 'CH']:
-                generation_pump = pd.to_numeric(pump.iloc[:, 0], errors='coerce').fillna(0)
+            # if code in ['BG', 'GR', 'CH']:
+            #     generation_pump = pd.to_numeric(pump.iloc[:, 0], errors='coerce').fillna(0)
 
-            elif code in ['ES']:  #ES changing the name of generation
+            if code in ['ES']:  #ES changing the name of generation
                 generation_pump = pd.to_numeric(pump.iloc[:, 0], errors='coerce').fillna(0)-pd.to_numeric(pump.iloc[:, 2], errors='coerce').fillna(0)*0.75-pd.to_numeric(pump.iloc[:, 1], errors='coerce').fillna(0)*0.75
             else:
                 generation_pump = pd.to_numeric(pump.iloc[:, 0], errors='coerce').fillna(0)-pd.to_numeric(pump.iloc[:, 1], errors='coerce').fillna(0)*0.75
@@ -242,7 +242,7 @@ class FetchInflow():
             
             generation_pump = generation_pump.resample('h').mean()
             generation_pump = generation_pump.resample('w-sun').sum().shift(freq="24h").iloc[1:-1] # start from Monday 00:00
-            generation_pump, reservoir_rate, inflow_start, inflow_end = rpi.time_align(reservoir_generation, reservoir_rate)
+            generation_pump, reservoir_rate, inflow_start, inflow_end = rpi.time_align(generation_pump, reservoir_rate)
             reservoir_generation, reservoir_rate, inflow_start, inflow_end = rpi.time_align(reservoir_generation, reservoir_rate)
 
             content_diff = reservoir_rate.diff().dropna()
@@ -258,18 +258,25 @@ class FetchInflow():
         else:
 
         # Align time series and calculate inflow
+            # if code in self.combined_inflow_codes:
+            #     # NO1-5 starts from 2022.
+            #     reservoir_generation = reservoir_generation[reservoir_generation.index.year >= 2022]
+            #     reservoir_rate = reservoir_rate[reservoir_rate.index.year >= 2022]
+            # else:
+            #     pass
+
             reservoir_generation, reservoir_rate, inflow_start, inflow_end = rpi.time_align(reservoir_generation, reservoir_rate)
             inflow_weekly = rpi.inflow_calculation(reservoir_generation, reservoir_rate)
         
-        inflow_weekly = cfd.check_negative_data(inflow_weekly)
+        #inflow_weekly = cfd.check_negative_data(inflow_weekly)
         # Save historical inflow data
-        history_data_path = path_obj.path_dict['history_data_path']
-        inflow_path = history_data_path / f'{code}_historical_hdam_inflow.csv'
+     
+        inflow_path =path_obj.path_dict['data_file']
         inflow_weekly.to_csv(inflow_path, sep=',')
         print(f'Save historical inflow for {code}--->Finished')
         
         # Plot and save historical inflow figure
-        fig_path = history_data_path / f'{code}_{inflow_start}_{inflow_end}_inflow.pdf'
+        fig_path = path_obj.path_dict['history_data_path']  / f'{code}_{inflow_start}_{inflow_end}_inflow.pdf'
         rpi.save_inflow_fig(inflow_weekly, str(fig_path), code)
 
 

@@ -170,6 +170,7 @@ class ReadProcessInflow:
         inf_original = content_diff.add(generation_align.iloc[:, 0], axis=0)      
         inf_original[inf_original<0]=None
         inf_original = inf_original.interpolate(method='linear')
+        #TODO: NO1-5 processed by zero, not interpolation
 
         return inf_original
     

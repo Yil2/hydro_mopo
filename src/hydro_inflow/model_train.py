@@ -243,7 +243,7 @@ class ModelTrain:
                     ax.set_xlabel("Time")
                     ax.set_ylabel("Energy (MWh)")
                     ax.set_title(
-                        f"{self.country_code} LOYO CV: r={corr:.2f}, R2={r2:.2f}, "
+                        f"{self.country_code} LOYO CV: r={corr:.2f}, NSE={r2:.2f}, "
                         f"MAE={mae:.0f} MWh, RMSE={rmse:.0f} MWh"
                     )
                     ax.legend()
@@ -494,6 +494,8 @@ class ModelTrain:
             y_model.index = y_model.index - pd.Timedelta(days=7)
         elif freq == 'ME':
             y_model = y_model.set_index(y_model.index+pd.DateOffset(months=-1)) #MONTHLY
+        else:
+            y_model = y_model.set_index(y_model.index+pd.DateOffset(days=-1))
 
         y_model.to_csv(self.path_dict['pred_data_file'], sep=',')
 
