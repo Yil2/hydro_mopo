@@ -74,7 +74,6 @@ class FetchPath:
 
     def __set_file_path(self, config_obj):
         country_code = config_obj.country_code
-        geo_dir = Path(config_obj.config['geo_dir'])
         scenario = config_obj.config['scenario']
 
         # if scenario == None:
@@ -88,7 +87,7 @@ class FetchPath:
         else:
             print('Unknown hydro type')
 
-        self.path_dict['onshore_filepath'] = geo_dir / 'onshore.geojson'
+   
         
         data_dir = Path(config_obj.config['data_dir'])
         history_data_path = data_dir / country_code
@@ -99,9 +98,6 @@ class FetchPath:
         self.path_dict["glofas_cdf_path"] = config_obj.config['glofas_cdf_path']
         self.path_dict['osm_filepath'] = history_data_path / (country_code + '_hydropower_plants.geojson')
 
-
-
-
         self.path_dict['disc_file'] = history_data_path / (country_code +'_' + type + '_' + scenario + '_glofas_discharge.csv')
 
         method = config_obj.config['algorithm']
@@ -111,10 +107,9 @@ class FetchPath:
         self.path_dict['pred_fig_path'] = solution_dir / str(scenario) / str(method)  / 'figs' / type
         self.path_dict['fitting_path'] = solution_dir / 'training_cv'
         self.path_dict['fitting_result'] = self.path_dict['fitting_path'] / (country_code + '_' + type +  '_'+ method + '_cv.png')
-
-
-        # Generated directories by this tool
+         # Generated directories by this tool
         self.__spine_gen_dir = ['history_data_path', 'pred_data_path', 'pred_fig_path', 'fitting_path']
+
 
     def __create_dir(self):
         for dir in self.__spine_gen_dir:
