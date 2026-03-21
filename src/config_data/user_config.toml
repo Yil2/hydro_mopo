@@ -62,8 +62,6 @@ algorithm  = ""
 #------------------------------ Hydro and Geographic Data in Local Path ---------------------------
 #--------------------------------------------------------------------------------------------------
 
-#----Input your path for the downloaded onshore geographic file
-geo_dir=''
 #----Input your path for saving the historical data
 data_dir=''
 #----Input your path for saving the modelled data

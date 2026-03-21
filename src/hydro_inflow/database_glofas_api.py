@@ -6,6 +6,7 @@ import geopandas as gpd
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from entsoe.geo.utils import load_zones
 
 
 class DatabaseGlofasAPI:
@@ -16,7 +17,7 @@ class DatabaseGlofasAPI:
         self.config = config_obj.config
         self.path_dict = path_obj.path_dict
         self.country_code = config_obj.country_code
-        self.pecd2_code = config_obj.map[self.country_code]['PECD2']
+        self.entsoe_code = config_obj.map[self.country_code]['Entsoe']
         self.hydro_type = config_obj.hydro_type
         self.var = 'dis24'
         self.osm_method = {
@@ -163,14 +164,11 @@ class DatabaseGlofasAPI:
         # Documentation: Assumption 1: fill NaN with water-storage  
         plants = osm_data[osm_data['plant:method'] == self.osm_method[self.hydro_type]]
         plants = plants[plants['geometry'].notna()]
-        
-        onshore_geo = gpd.read_file(self.path_dict['onshore_filepath'])
-        pecd2_geo = onshore_geo[onshore_geo['level']=='PECD2']
-
-        zone = pecd2_geo[pecd2_geo['id'].isin(self.pecd2_code)]
+    
+        zone = load_zones([self.entsoe_code], pd.Timestamp("2024-01-01")) # default geojson is new
         plants_in_zone = self.sjoin_gdf(plants, zone).reset_index(drop=True)
         #TODO: check the installed capacity in OSM data
-        #plants_large =...
+    
         if plants_in_zone.shape[0] == 0:
             raise ValueError(f"No {self.hydro_type} plants in {self.country_code}")
             
