@@ -662,7 +662,7 @@ hror_type_support = false
 [AL]
 COUNTRY = "Albania "
 iso_code = "AL"
-Entsoe = ""
+Entsoe = "AL"
 eSett = ""
 PECD2 = [ "AL00"]
 entose_reservoir_rate = "20250101"

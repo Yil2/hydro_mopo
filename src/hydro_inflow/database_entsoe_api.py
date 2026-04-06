@@ -139,6 +139,8 @@ class EntsoeDataProcess:
                 data_df= data_df['Updated Generation']
             else:
                 pass
+            data_df.columns = ['Reservoir generation']
+
 
         elif data_type == "Run of river":
             ror_filled = data_df.fillna(0)
@@ -164,6 +166,9 @@ class EntsoeDataProcess:
                 data_df = pd.DataFrame(data_df['ror'])
             else:
                 pass
+
+            data_df.columns = ['Run of river generation']
+
         else:
             pass
 
