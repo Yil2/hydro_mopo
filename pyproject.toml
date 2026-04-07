@@ -10,8 +10,8 @@ dependencies = [
             "toml == 0.10.2", 
             "cdsapi==0.7.5",
             "geopandas==1.0.1",
-            "matplotlib==3.7.1",
-            "numpy==1.26.4",
+            "matplotlib>=3.7.1",
+            "numpy>=1.26.4",
             "pandas==2.2.3",
             "Requests==2.32.3",
             "scikit_learn==1.6.1",
@@ -19,9 +19,11 @@ dependencies = [
             "xarray==2025.3.1",
             "netCDF4==1.7.2",
             "entsoe-py==0.6.18",
+            "geojson-rewind",
+            "openpyxl",
 ]
 
-requires-python = "==3.12.4"
+requires-python = ">=3.12.4"
 
 authors = [
   {name = "Yi Liu", email = "yil2@kth.se"},
