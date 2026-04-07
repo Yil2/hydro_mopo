@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import sys
 import matplotlib.pyplot as plt
+from datetime import datetime, timezone
+
 from hydro_inflow.database_eSett_api import EsettResponse
 from hydro_inflow.database_entsoe_api import EntsoeDataProcess
 
@@ -18,16 +20,15 @@ class FetchInflow():
         self.esett_obj = EsettResponse(config_obj)
         self.entsoe_obj = EntsoeDataProcess(config_obj, api_key=config_obj.config['entsoe_api_token'] )
 
-        
-
     # Entry point of the api launch
     def api_run(self, path_obj, config_obj, type):
-        
         if type == 'hdam':
-            self.__hdam_api_run(path_obj, config_obj)
+            return self.__hdam_api_run(path_obj, config_obj)
         elif type == 'hror':
             print('Fetching hror data...')
-            self.__hror_api_run(path_obj, config_obj)
+            return self.__hror_api_run(path_obj, config_obj)
+
+        raise ValueError(f"Unsupported hydro type: {type}")
 
 
     def __check_data(self,input_data, freq):
@@ -44,6 +45,12 @@ class FetchInflow():
             print('Missing data found and filled by linear interpolation')
 
         return pd.DataFrame(data)
+
+    def __load_existing_data(self, csv_path):
+        data = pd.read_csv(csv_path, index_col=0, parse_dates=True)
+        data.index = pd.to_datetime(data.index, utc=True, errors="coerce")
+        data = data[~data.index.isna()]
+        return data.sort_index()
 
 
 
@@ -75,9 +82,10 @@ class FetchInflow():
         code = config_obj.country_code
         generated_data_file = path_obj.path_dict['data_file']
         if generated_data_file.exists():
-            print('Local historical ror generation data already exists. Skipping data fetching')
-        else:
-            print('Local historical ror generation data does not exist. Fetching data from API...')
+            print('Local historical ror generation data already exists. Reusing local file.')
+            return self.__load_existing_data(generated_data_file)
+
+        print('Local historical ror generation data does not exist. Fetching data from API...')
         
         ror = self.api_request(config_obj, code, "Run of river")
         ror.index = pd.to_datetime(ror.index)
@@ -98,9 +106,10 @@ class FetchInflow():
         generated_data_file = path_obj.path_dict['data_file']
 
         if generated_data_file.exists():
-            print('Local historical inflow data already exists. Skipping data fetching')
-        else:
-            print('Local historical inflow data does not exist. Fetching data from API...')
+            print('Local historical inflow data already exists. Reusing local file.')
+            return self.__load_existing_data(generated_data_file)
+
+        print('Local historical inflow data does not exist. Fetching data from API...')
 
         reservoir_generation = self.api_request(config_obj, code, "Reservoir generation")
         reservoir_generation.index = pd.to_datetime(reservoir_generation.index)
@@ -179,6 +188,9 @@ class FetchInflow():
                 except Exception as e:
                     print(f'Fetching {code} Pumped Storage generation from ENTSOE API failed: {e}')
                     sys.exit(1)
+
+        if request_data is None:
+            raise ValueError(f"No data returned for {code} {data_type}")
 
         return request_data
     
@@ -273,7 +285,7 @@ class FetchInflow():
 
 
     def __start_end_date(self, code, start_time):
-        end_date = '20260101'
+        end_date = datetime.now(timezone.utc).strftime("%Y%m%d")
         
         if code in self.esett_country_list:
             start_date = '20170101'
@@ -302,7 +314,7 @@ class FetchInflow():
 
         if pd.notna(pump_start_time):
             start_date = pump_start_time
-            end_date = '20260101'
+            end_date = datetime.now(timezone.utc).strftime("%Y%m%d")
             dates = (start_date, end_date)
             try:
                 pump = self.entsoe_obj.entsoe_request("Pumped Storage", config_obj.map[code]['Entsoe'], 
@@ -323,7 +335,7 @@ class FetchInflow():
         
     def __price_request(self, config_obj, code):
         start_date = '20150101'
-        end_date = '20260101'
+        end_date = datetime.now(timezone.utc).strftime("%Y%m%d")
         
         try:    
             print(f"Retrieve entsoe data: {code}_price--->Start")
