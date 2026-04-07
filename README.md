@@ -35,8 +35,7 @@ Please contact  ENTSO-E Transparency Platform team to get the API key.
 Please follow the [CDSAPI setup](https://confluence.ecmwf.int/display/CKB/How+to+install+and+use+CDS+API+on+Windows) to setup the CDS Api key.
 
 ### Requirement
-1. Python version **"==3.12.4"**
-The tool currently only works under Python 3.12.4.
+1. Python version **">=3.12.4"**
 2. Git
 3. Extra requirement of [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) for figure plotting. Go to the website and download by cliking **Donwload Build Tools**; Install the **Desktop development with C++**.
 
@@ -88,7 +87,7 @@ python -m hydro_inflow --run
     + data_dir= 'Your path saving the historical data'
     + solution_dir = 'Your path saving the modelled results'
     + glofas_cdf_path= 'Your path saving the raw weather data'  
-    \ :file_folder: The folder for saving the raw weather data should be a new directory without other NC files.
+    \:file_folder: The folder for saving the raw weather data should be a new directory without other NC files.
 
 + Input API token
     + entsoe_api_token='Your entsoe api token'
