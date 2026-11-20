@@ -101,4 +101,4 @@ This work is built based on below open data.
 
 
 ## Citation :smile: 
-:paperclip: Liu, Yi, Mikael Amelin, and Tommi Laine. "Estimating daily run-of-river hydropower generation from open hydrometeorological data: Limits of hydrology-based modelling." Renewable Energy (2026): 126433. DOI:10.1016/j.renene.2026.126433 
+:paperclip: Liu, Yi, Mikael Amelin, and Tommi Laine. "Estimating daily run-of-river hydropower generation from open hydrometeorological data: Limits of hydrology-based modelling." Renewable Energy (2026): 126433.
